@@ -1,0 +1,48 @@
+# project
+# .project
+upyun.config.js
+server.config.js
+
+# npm
+node_modules/
+npm-debug.log
+# package-lock.json
+
+# project ignores
+# !.gitkeep
+# *__temp
+# /docs
+# /examples_old
+# /bin
+# /coverage
+# /lib
+# /dist
+
+# publish
+# dist/
+# public/
+# build/
+# zip
+
+# temp files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# vim swap files
+*.sw*
+
+# emacs temp files
+*~
+\#*#
+
+# sublime text files
+*.sublime*
+*.*~*.TMP
+
+# jetBrains IDE ignores
+.idea
+
+
+# visual studio code ignores
+.vscode

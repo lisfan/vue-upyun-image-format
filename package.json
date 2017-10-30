@@ -1,0 +1,44 @@
+{
+  "name": "@~lisfan/logger",
+  "version": "1.2.0-rc.3",
+  "description": "通用日志打印器",
+  "main": "src/index.js",
+  "scripts": {
+    "pub-pre": "git pull && npm update && npm version prerelease && git add . && git commit -m 'updata: update version' && git push",
+    "pub-n": "npm run pub-pre && npm publish --tag nightly",
+    "pub-a": "npm run pub-pre && npm publish --tag alpha",
+    "pub-b": "npm run pub-pre && npm publish --tag beta",
+    "pub-rc": "npm run pub-pre && npm publish --tag rc",
+    "pub-s": "npm run pub-pre && npm publish --tag stable",
+    "pub": "npm run pub-pre && npm publish",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs": "rm -rf docs && jsdoc -c conf/jsdoc.config.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lisfan/logger.git"
+  },
+  "keywords": [
+    "log",
+    "logger",
+    "debug",
+    "console",
+    "output"
+  ],
+  "author": "lisfan <goolisfan@gmail.com> (https://www.npmjs.com/~lisfan)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lisfan/logger/issues"
+  },
+  "homepage": "https://github.com/lisfan/logger#readme",
+  "dependencies": {
+    "@~lisfan/validation": "~1.0.0-rc.8"
+  },
+  "devDependencies": {
+    "docdash": "~0.4.0",
+    "jsdoc": "~3.5.5"
+  },
+  "peerDependencies": {
+    "vue": "~2.5.2"
+  }
+}
