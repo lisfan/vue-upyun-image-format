@@ -1,7 +1,7 @@
 {
-  "name": "@~lisfan/logger",
-  "version": "1.2.0-rc.3",
-  "description": "通用日志打印器",
+  "name": "@~lisfan/vue-upyun-image-clipper",
+  "version": "1.0.0-alpha.0",
+  "description": "vue过滤器插件-又拍云图片裁剪器：根据DPR尺寸处理显示的图片大小",
   "main": "src/index.js",
   "scripts": {
     "pub-pre": "git pull && npm update && npm version prerelease && git add . && git commit -m 'updata: update version' && git push",
@@ -16,23 +16,24 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lisfan/logger.git"
+    "url": "git+https://github.com/lisfan/vue-upyun-image-clipper.git"
   },
   "keywords": [
-    "log",
-    "logger",
-    "debug",
-    "console",
-    "output"
+    "upyun",
+    "image-clipper",
+    "vue",
+    "plugin",
+    "responsive"
   ],
   "author": "lisfan <goolisfan@gmail.com> (https://www.npmjs.com/~lisfan)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/lisfan/logger/issues"
+    "url": "https://github.com/lisfan/vue-upyun-image-clipper/issues"
   },
-  "homepage": "https://github.com/lisfan/logger#readme",
+  "homepage": "https://github.com/lisfan/vue-upyun-image-clipper#readme",
   "dependencies": {
-    "@~lisfan/validation": "~1.0.0-rc.8"
+    "@~lisfan/logger": "~1.2.0-rc.3",
+    "@~lisfan/validation": "~1.0.0-rc.11"
   },
   "devDependencies": {
     "docdash": "~0.4.0",

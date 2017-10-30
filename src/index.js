@@ -4,8 +4,8 @@
  * @version 1.0.0
  */
 
-import _ from 'lodash'
-import Logger from 'utils/logger'
+import _ from '@~lisfan/validation'
+import Logger from '@~lisfan/logger'
 
 const imageSize = {} // 插件对象
 const filterName = 'image-size' // 过滤器名称
