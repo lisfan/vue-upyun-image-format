@@ -5,7 +5,7 @@
  * @licence MIT
  */
 
-import _ from '@~lisfan/validation'
+import validation from '@~lisfan/validation'
 import Logger from '@~lisfan/logger'
 
 let UpyunImageClipper = {} // 插件对象
@@ -50,7 +50,7 @@ UpyunImageClipper.install = function (Vue, {
   })
 
   // 插件注册时验证是否会存在网络制式处理器，若不存在，则抛出错误
-  if (!_.isFunction(networkHandler)) {
+  if (!validation.isFunction(networkHandler)) {
     logger.error(`Vue plugin install faild! require a (networkHandler) option property, type is (function), please`)
   }
 
@@ -64,12 +64,12 @@ UpyunImageClipper.install = function (Vue, {
    */
   Vue.filter(FILTER_NAMESPACE, (src, size, specsType = specs, otherRule = rule) => {
     // 如果未传入图片地址，则返回空值
-    if (_.isUndefined(src)) {
+    if (validation.isUndefined(src)) {
       return ''
     }
 
     // 数据类型验证：非数字和图片时提示参数错误
-    if (!_.isNumber(size) && !_.isString(size)) {
+    if (!validation.isNumber(size) && !validation.isString(size)) {
       logger.error(`(${FILTER_NAMESPACE}) ${PLUGIN_TYPE} require a size param, type is (number) or (string)`)
     }
 
