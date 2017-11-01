@@ -1,4 +1,6 @@
-# logger 日志打印器
+# logger
+
+## 日志打印器
 
 [API documentation](https://lisfan.github.io/logger/)
 
