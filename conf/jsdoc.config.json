@@ -44,7 +44,8 @@
       "returns",
       "throws",
       "todo",
-      "example"
+      "example",
+      "classdesc"
     ],
     "excludeTags": [
       "author",

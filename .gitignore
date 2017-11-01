@@ -6,7 +6,7 @@ server.config.js
 # npm
 node_modules/
 npm-debug.log
-# package-lock.json
+package-lock*
 
 # project ignores
 # !.gitkeep

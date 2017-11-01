@@ -32,7 +32,7 @@ const PLUGIN_TYPE = 'filter'
  * @param {object} [options={}] - 配置选项
  * @param {number} [options.debug=false] - 是否开启日志调试模式，默认关闭
  * @param {number} [options.maxDPR=3] - 4g网络下，DPR取值的最大数，默认值为3
- * @param {number} [options.draftRatio=2] - ui尺寸和设备物理尺寸的比例，默认值为2：以我们在基于ip6 350px宽的基础上，UI设计师放大2倍以750宽进行设计
+ * @param {number} [options.draftRatio=2] - UI设计稿尺寸与设备物理尺寸的比例，默认值为2
  * @param {string} [options.specs='both'] - 又拍云尺寸裁剪方式，默认'both'进行固定宽度和高度，宽高不足时居中裁剪再缩放
  * @param {string} [options.rule=''] - 又拍云的其他规则，需要以'/'开头
  */
