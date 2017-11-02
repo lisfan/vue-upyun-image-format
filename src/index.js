@@ -44,6 +44,27 @@ const _actions = {
     }
 
     return isValidSize ? finalSizeList.join('x') : ''
+  },
+  // 获取图片尺寸
+  getFinalFormat(size, finalDPR, draftRatio) {
+    let isValidSize = false
+    let finalSizeList = []
+
+    if (!validation.isNull(size)) {
+      // 计算图片尺寸
+      const sizeList = size.toString().split('x')
+
+      finalSizeList = sizeList.map((sizeItem) => {
+        return Math.round((Number.parseFloat(sizeItem) / draftRatio) * finalDPR)
+      })
+
+      // 查看是否存在NaN项
+      isValidSize = !finalSizeList.some((size) => {
+        return validation.isNaN(size)
+      })
+    }
+
+    return isValidSize ? finalSizeList.join('x') : ''
   }
 }
 /**
@@ -90,7 +111,7 @@ UpyunImageClipper.install = function (Vue, {
    * @param {?number} [quantity=90] - 又拍云jpg格式图片默认质量
    * @param {?string} [rules=''] - 又拍云的其他规则
    */
-  Vue.filter(FILTER_NAMESPACE, (src, size, scaleSpecs = scale, format, quantitySpecs = quantity, rulesSpecs = rules) => {
+  Vue.filter(FILTER_NAMESPACE, (src, size, customScale = scale, format, customQuantity = quantity, customRules = rules) => {
     // 如果未传入图片地址，则返回空值
     if (validation.isUndefined(src)) {
       return ''
@@ -108,21 +129,20 @@ UpyunImageClipper.install = function (Vue, {
     logger.log('origin dpr:', DPR)
     logger.log('draftRatio:', draftRatio)
 
-    let isValidSize = true // 是否存在有效的尺寸，若尺寸均无效，则使用原尺寸
     let finalDPR = _actions.getFinalDPR(networkType, DPR, maxDPR) // 最终的DPR取值
     let finalSize = _actions.getFinalSize(size, finalDPR, draftRatio) // 最终的尺寸取值
+    let finalFormat = _actions.getFinalFormat(size, finalDPR, draftRatio) // 最终的图片格式
     let finalScale = '' // 最终的缩放取值
 
-    
     // 尺寸为null或者解析为NaN时
     if (finalSize) {
-      finalScale = `/${scaleSpecs}/${finalSize}`
+      finalScale = `/${customScale}/${finalSize}`
     }
 
     // 最终其他规则项
-    let finalRules = rulesSpecs
-    if (rulesSpecs && !rulesSpecs.startsWith('/')) {
-      finalRules = '/' + rulesSpecs
+    let finalRules = customRules
+    if (customRules && !customRules.startsWith('/')) {
+      finalRules = '/' + customRules
     }
 
     // 尺寸规格或其他规则至少存在一项时，加上前缀`!符号`
