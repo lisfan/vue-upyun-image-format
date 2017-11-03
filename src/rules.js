@@ -11,7 +11,7 @@ export default {
   size: null, // 图片尺寸，保留原尺寸
   progressive: true, // 是否启用模
   compress: true, // 启用压缩优化
-  quantity: 90, // jpg图片压缩质量
+  quality: 90, // jpg图片压缩质量
   force: false, // 图片原尺寸不足时，自动放大
 }
 
@@ -21,7 +21,7 @@ let x = {
   png: '/format/png',// 转换为png
   webp: '/format/webp',// 转换为webp
   compress: '/compress/true',// 压缩优化
-  quantity90: '/quantity/90'// 压缩质量90%
+  quality90: '/quality/90'// 压缩质量90%
 }
 
 // 启用一个功能项的条件

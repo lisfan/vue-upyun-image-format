@@ -10,19 +10,12 @@ import Logger from '@~lisfan/logger'
 
 import RULES from './rules'
 
-import checkWebpFeatures from './utils/check-webp-features'
+import isWebpSupport from './utils/webp-features-support'
 import getNetworkType from './utils/get-network-type'
 
 let UpyunImageClipper = {} // 插件对象
 const FILTER_NAMESPACE = 'image-format' // 过滤器名称
 const PLUGIN_TYPE = 'filter'
-
-// 初始化webp支持的特性promise
-const isWebpSupport = {
-  lossy: checkWebpFeatures('lossy'),
-  lossless: checkWebpFeatures('lossless'),
-  animation: checkWebpFeatures('animation'),
-}
 
 // 私有方法
 const _actions = {
@@ -74,19 +67,15 @@ const _actions = {
    * 获取图片格式
    * @param format
    */
-  async getFinalFormat(format, originFormat, lossless) {
+  getFinalFormat(format, originFormat, lossless) {
     // 若指定了图片格式，且不是webp格式，则直接返回
     if (validation.isString(format) && format !== 'webp') {
       return format
     } else if (format === 'webp') {
       // todo 如果是gif则判断是否支持动效
       // 如果用户指定了图片格式，则以用户自定义为主
-      const isSupport = await isWebpSupport('loose').then((result) => {
-        return result
-      })
-
       // 若不支持，则动态webp转换为gif格式，其他格式统一转换为jpg格式
-      if (isSupport) {
+      if (isWebpSupport['loose']) {
         return format
       }
 
@@ -155,17 +144,17 @@ const _actions = {
  * @param {boolean} [options.debug=false] - 是否开启日志调试模式，默认关闭
  * @param {number} [options.maxDPR=3] - 4g网络下，DPR取值的最大数，默认值为3
  * @param {number} [options.draftRatio=2] - UI设计稿尺寸与设备物理尺寸的比例，默认值为2
- * @param {number} [options.quantity=90] - 又拍云jpg格式图片默认质量
+ * @param {number} [options.quality=90] - 又拍云jpg格式图片默认质量
  * @param {string} [options.scale='both'] - 又拍云图片尺寸缩放方式，默认宽度进行自适应，超出尺寸进行裁剪，若自定义尺寸大于原尺寸时，自动缩放至指定尺寸再裁剪
  * @param {string} [options.rules=''] - 又拍云图片格式化的其他规则
  * @param {function} [options.networkHandler=xxxx] - 获取网络制式的处理函数
  */
-UpyunImageClipper.install = function (Vue, {
+UpyunImageClipper.install = async function (Vue, {
   debug = false,
   maxDPR = 3,
   draftRatio = 2,
   scale = RULES.scale,
-  quantity = RULES.quantity,
+  quality = RULES.quality,
   rules = '',
   networkHandler = getNetworkType
 } = {}) {
@@ -186,12 +175,12 @@ UpyunImageClipper.install = function (Vue, {
    * @param {?number|string} [size] - 裁剪尺寸，取设计稿中的尺寸即可
    * @param {?string} [scale='both'] - 又拍云图片尺寸缩放方式
    * @param {?string} [format] - 又拍云图片格式化，不同条件有不同的选择，具体格式按具体场景区分
-   * @param {?number} [quantity=90] - 又拍云jpg格式图片默认质量
+   * @param {?number} [quality=90] - 又拍云jpg格式图片默认质量
    * @param {?string} [rules=''] - 又拍云的其他规则
    */
-  Vue.filter(FILTER_NAMESPACE, async (src, size, customScale = scale, format, customQuantity = quantity, customRules = rules) => {
+  Vue.filter(FILTER_NAMESPACE, (src, size, customScale = scale, format, customQuantity = quality, customRules = rules) => {
     // 如果未传入图片地址，则返回空值
-    if (validation.isUndefined(src)) {
+    if (validation.isUndefined(src) || validation.isEmpty(src)) {
       return ''
     }
 
@@ -209,7 +198,7 @@ UpyunImageClipper.install = function (Vue, {
 
     let finalDPR = _actions.getFinalDPR(networkType, DPR, maxDPR) // 最终的DPR取值
     let finalSize = _actions.getFinalSize(size, finalDPR, draftRatio) // 最终的尺寸取值
-    let finalFormat = await _actions.getFinalFormat('jpg', 'gif') // 最终的图片格式
+    let finalFormat = _actions.getFinalFormat('jpg', 'gif') // 最终的图片格式
     let finalScale = 'both' // 最终的缩放取值
 
     logger.log('final image size:', finalSize)
@@ -224,7 +213,7 @@ UpyunImageClipper.install = function (Vue, {
       scale: finalScale, // 缩放规格
       size: finalSize, // 图片尺寸
       // compress: true, // 压缩优化
-      // quantity: '', // jpg图片压缩质量
+      // quality: '', // jpg图片压缩质量
       // progressive:true, // 是否启用模
     })
 

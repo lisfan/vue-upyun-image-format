@@ -5,7 +5,9 @@
  * @licence MIT
  */
 
-export default  function getNetworkType() {
+// import checkWebpFeature from './webp-features-support'
+
+export default function getNetworkType() {
   // 检测NetworkInformation接口是否存在，若存在
   if (!navigator.connection) {
     return 'unknow'
