@@ -9,7 +9,8 @@
     "pub-a": "npm run pub-pre && npm publish --tag alpha && npm run pub-post",
     "pub-b": "npm run pub-pre && npm publish --tag beta && npm run pub-post",
     "pub-rc": "npm run pub-pre && npm publish --tag rc && npm run pub-post",
-    "pub": "npm run pub-pre && npm publish && npm run pub-post",
+    "pub-l": "npm run pub-pre && npm publish && npm run pub-post",
+    "pub": "git pull && npm publish && npm run pub-post",
     "pub-post": "git commit -am \"chore: publish@$npm_package_version\" && git push",
     "docs": "rm -rf docs && jsdoc -c conf/jsdoc.config.json"
   },
@@ -31,8 +32,8 @@
   },
   "homepage": "https://github.com/lisfan/vue-upyun-image-clipper#readme",
   "dependencies": {
-    "@~lisfan/logger": "~1.3.0-rc.0",
-    "@~lisfan/validation": "~1.0.0-rc.0"
+    "@~lisfan/logger": "^1.0.0",
+    "@~lisfan/validation": "^1.0.0"
   },
   "devDependencies": {
     "docdash": "~0.4.0",
