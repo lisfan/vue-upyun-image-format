@@ -8,13 +8,32 @@
 import validation from '@~lisfan/validation'
 import Logger from '@~lisfan/logger'
 
+import RULES from './rules'
+
+import checkWebpFeatures from './utils/check-webp-features'
+import getNetworkType from './utils/get-network-type'
+
 let UpyunImageClipper = {} // 插件对象
-const FILTER_NAMESPACE = 'image-size' // 过滤器名称
+const FILTER_NAMESPACE = 'image-format' // 过滤器名称
 const PLUGIN_TYPE = 'filter'
+
+// 初始化webp支持的特性promise
+const isWebpSupport = {
+  lossy: checkWebpFeatures('lossy'),
+  lossless: checkWebpFeatures('lossless'),
+  animation: checkWebpFeatures('animation'),
+}
 
 // 私有方法
 const _actions = {
-  // 获取最终的DPR值
+  /**
+   * 根据当前的网络制式，获取最终的DPR值
+   *
+   * @param networkType
+   * @param DPR
+   * @param maxDPR
+   * @returns {*}
+   */
   getFinalDPR(networkType, DPR, maxDPR) {
     if (networkType === '4g') {
       return DPR >= maxDPR ? maxDPR : DPR
@@ -24,7 +43,13 @@ const _actions = {
       return 1
     }
   },
-  // 获取图片尺寸
+  /**
+   * 获取图片尺寸
+   * @param size
+   * @param finalDPR
+   * @param draftRatio
+   * @returns {string}
+   */
   getFinalSize(size, finalDPR, draftRatio) {
     let isValidSize = false
     let finalSizeList = []
@@ -45,26 +70,79 @@ const _actions = {
 
     return isValidSize ? finalSizeList.join('x') : ''
   },
-  // 获取图片尺寸
-  getFinalFormat(size, finalDPR, draftRatio) {
-    let isValidSize = false
-    let finalSizeList = []
-
-    if (!validation.isNull(size)) {
-      // 计算图片尺寸
-      const sizeList = size.toString().split('x')
-
-      finalSizeList = sizeList.map((sizeItem) => {
-        return Math.round((Number.parseFloat(sizeItem) / draftRatio) * finalDPR)
+  /**
+   * 获取图片格式
+   * @param format
+   */
+  async getFinalFormat(format, originFormat, lossless) {
+    // 若指定了图片格式，且不是webp格式，则直接返回
+    if (validation.isString(format) && format !== 'webp') {
+      return format
+    } else if (format === 'webp') {
+      // todo 如果是gif则判断是否支持动效
+      // 如果用户指定了图片格式，则以用户自定义为主
+      const isSupport = await isWebpSupport('loose').then((result) => {
+        return result
       })
 
-      // 查看是否存在NaN项
-      isValidSize = !finalSizeList.some((size) => {
-        return validation.isNaN(size)
-      })
+      // 若不支持，则动态webp转换为gif格式，其他格式统一转换为jpg格式
+      if (isSupport) {
+        return format
+      }
+
+      // 如果不支持
+      if (originFormat === 'gif') {
+        return 'gif'
+      } else {
+        return 'jpg'
+      }
+    } else {
+      // 未指定，则使用默认格式
+      return 'jpg'
+    }
+  },
+
+  /**
+   * 序列化规则
+   * @param {object} rules - 规则配置
+   * @returns {string}
+   */
+  stringifyRule(rules) {
+    // 合并默认规则配置
+    rules = {
+      ...RULES,
+      ...rules,
     }
 
-    return isValidSize ? finalSizeList.join('x') : ''
+    // 移除设置为null或undefined的值
+    const filterRules = {}
+
+    Object.entries(rules).forEach(([key, value]) => {
+      if (!validation.isNil(value)) {
+        filterRules[key] = value
+      }
+    })
+
+    const len = Object.keys(filterRules).length
+
+    // 不存在值时，直接返回空字符串
+    if (len === 0) {
+      return ''
+    }
+
+    // 提前取出缩放方式(scale)和尺寸(size)进行设置
+    let imageSrc = validation.isNil(filterRules.size) ? '' : `/${filterRules.scale}/${filterRules.size}`
+
+    imageSrc += Object.entries(filterRules).reduce((result, [key, value]) => {
+      if (key === 'size' || key === 'scale') {
+        return result
+      }
+
+      return result + `/${key}/${value}`
+    }, '')
+
+    // 尺寸规格或其他规则至少存在一项时，加上前缀`!`修饰符号
+    return validation.isEmpty(imageSrc) ? '' : '!' + imageSrc
   }
 }
 /**
@@ -86,10 +164,10 @@ UpyunImageClipper.install = function (Vue, {
   debug = false,
   maxDPR = 3,
   draftRatio = 2,
-  scale = 'both',
-  quantity = 90,
+  scale = RULES.scale,
+  quantity = RULES.quantity,
   rules = '',
-  networkHandler
+  networkHandler = getNetworkType
 } = {}) {
   const logger = new Logger({
     name: `${PLUGIN_TYPE}:${FILTER_NAMESPACE}`,
@@ -111,7 +189,7 @@ UpyunImageClipper.install = function (Vue, {
    * @param {?number} [quantity=90] - 又拍云jpg格式图片默认质量
    * @param {?string} [rules=''] - 又拍云的其他规则
    */
-  Vue.filter(FILTER_NAMESPACE, (src, size, customScale = scale, format, customQuantity = quantity, customRules = rules) => {
+  Vue.filter(FILTER_NAMESPACE, async (src, size, customScale = scale, format, customQuantity = quantity, customRules = rules) => {
     // 如果未传入图片地址，则返回空值
     if (validation.isUndefined(src)) {
       return ''
@@ -131,32 +209,25 @@ UpyunImageClipper.install = function (Vue, {
 
     let finalDPR = _actions.getFinalDPR(networkType, DPR, maxDPR) // 最终的DPR取值
     let finalSize = _actions.getFinalSize(size, finalDPR, draftRatio) // 最终的尺寸取值
-    let finalFormat = _actions.getFinalFormat(size, finalDPR, draftRatio) // 最终的图片格式
-    let finalScale = '' // 最终的缩放取值
-
-    // 尺寸为null或者解析为NaN时
-    if (finalSize) {
-      finalScale = `/${customScale}/${finalSize}`
-    }
-
-    // 最终其他规则项
-    let finalRules = customRules
-    if (customRules && !customRules.startsWith('/')) {
-      finalRules = '/' + customRules
-    }
-
-    // 尺寸规格或其他规则至少存在一项时，加上前缀`!符号`
-    let finalSrc = finalScale + finalRules
-    if (finalScale || finalRules) {
-      finalSrc = '!' + finalSrc
-    }
-
-    finalSrc = src + finalSrc
+    let finalFormat = await _actions.getFinalFormat('jpg', 'gif') // 最终的图片格式
+    let finalScale = 'both' // 最终的缩放取值
 
     logger.log('final image size:', finalSize)
     logger.log('final image DPR:', finalDPR)
     logger.log('final image scale:', finalScale)
-    logger.log('final image rules:', finalRules)
+    logger.log('final image format:', finalFormat)
+    logger.log('final image rules:', customRules)
+
+    // 拼接最终的结果
+    let finalSrc = src + _actions.stringifyRule({
+      format: finalFormat,
+      scale: finalScale, // 缩放规格
+      size: finalSize, // 图片尺寸
+      // compress: true, // 压缩优化
+      // quantity: '', // jpg图片压缩质量
+      // progressive:true, // 是否启用模
+    })
+
     logger.log('final image src:', finalSrc)
 
     return finalSrc

@@ -5,11 +5,11 @@
  * @licence MIT
  */
 
-// const getNetworkHandler = function () {
-//   // 检测NetworkInformation接口是否存在，若存在
-//   if (!navigator.connection) {
-//     return false
-//   }
-//
-//   return navigator.connection.effectiveType
-// }
+export default  function getNetworkType() {
+  // 检测NetworkInformation接口是否存在，若存在
+  if (!navigator.connection) {
+    return 'unknow'
+  }
+
+  return navigator.connection.effectiveType
+}

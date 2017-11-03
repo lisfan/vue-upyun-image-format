@@ -32,7 +32,7 @@
   },
   "homepage": "https://github.com/lisfan/vue-upyun-image-clipper#readme",
   "dependencies": {
-    "@~lisfan/logger": "^1.0.0",
+    "@~lisfan/logger": "~1.3.0",
     "@~lisfan/validation": "^1.0.0"
   },
   "devDependencies": {
