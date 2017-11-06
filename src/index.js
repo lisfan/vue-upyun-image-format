@@ -15,6 +15,22 @@ let ImageFormat = {} // 插件对象
 const PLUGIN_TYPE = 'filter' // 插件类型
 const FILTER_NAMESPACE = 'image-format' // 过滤器名称
 
+const SCALE_PARAM_LEN = {
+  fw: 1,
+  fh: 1,
+  max: 1,
+  min: 1,
+  fwfh: 2,
+  fwfh2: 2,
+  both: 2,
+  sq: 1,
+  scale: 1,
+  wscale: 1,
+  hscale: 1,
+  fxfn: 2,
+  fxfn2: 2,
+  fp: 1,
+}
 // 私有方法
 const _actions = {
   /**
@@ -48,18 +64,19 @@ const _actions = {
     } else if (networkType === 'wifi') {
       return DPR
     } else {
-      1
+      return 1
     }
   },
   /**
    * 获取最终的图片尺寸
    *
    * @param {?number|string} size - 自定义尺寸
-   * @param {number} finalDPR
-   * @param {number} draftRatio
+   * @param {string} finalScale - 最终缩放格式
+   * @param {number} finalDPR - 最终DPR值
+   * @param {number} draftRatio - 物理尺寸和UI草稿比
    * @returns {?string}
    */
-  getFinalSize(size, finalDPR, draftRatio) {
+  getFinalSize(size, finalScale, finalDPR, draftRatio) {
     // 是否存在有效的尺寸值
     let isValidSize = false
 
@@ -72,10 +89,23 @@ const _actions = {
         return Math.round((Number.parseFloat(sizeItem) / draftRatio) * finalDPR)
       })
 
-      // 查看是否存在NaN项
-      isValidSize = !finalSizeList.some((size) => {
-        return validation.isNaN(size)
+      // 查看是否为数字格式
+      finalSizeList = finalSizeList.filter((size) => {
+        return validation.isNumber(size)
       })
+
+      const paramLen = SCALE_PARAM_LEN[finalScale]
+      // 截取缩放方式需要的缩放规格长度
+      finalSizeList = finalSizeList.slice(0, paramLen)
+      const sizeLen = finalSizeList.length
+      isValidSize = sizeLen > 0
+
+      if (paramLen > sizeLen) {
+        const quotient = Math.ceil(sizeLen / paramLen) + 1
+
+        finalSizeList = (finalSizeList.toString() + ',').repeat(quotient).slice(0, -1).split(',')
+        finalSizeList = finalSizeList.slice(0, paramLen)
+      }
     }
 
     return isValidSize ? finalSizeList.join('x') : null
@@ -141,22 +171,6 @@ const _actions = {
     // 返回源格式
     return format
   },
-
-  /**
-   * 过滤为undefined、null及空值
-   * @param {object} rules - 规则配置
-   * @returns {object}
-   */
-  filterRules(rules) {
-    let filterRules = {}
-    Object.entries(rules).forEach(([key, value]) => {
-      if (!validation.isNil(value) && !validation.isEmpty(value)) {
-        filterRules[key] = value
-      }
-    })
-
-    return filterRules
-  },
   /**
    * 获取自定义的其他又拍云规则项
    * [注] 规则项需要有对应关系，不可随意填写
@@ -194,6 +208,21 @@ const _actions = {
     return finalOtherRules
   },
   /**
+   * 过滤为undefined、null及空值
+   * @param {object} rules - 规则配置
+   * @returns {object}
+   */
+  filterRules(rules) {
+    let filterRules = {}
+    Object.entries(rules).forEach(([key, value]) => {
+      if (!validation.isNil(value) || !validation.isEmpty(value)) {
+        filterRules[key] = value
+      }
+    })
+
+    return filterRules
+  },
+  /**
    * 根据图片格式进一步优化规则
    * 目前只有两条规则，所以不采用策略，直接进行逻辑判断
    *
@@ -204,7 +233,7 @@ const _actions = {
     // 若未jpg格式，且不存在模糊到清晰配置时，
     if (!validation.isBoolean(rules.progressive) && rules.format === 'jpg') {
       rules.progressive = true
-    } else if (!validation.isBoolean(rules.progressive) && rules.format === 'png') {
+    } else if (!validation.isBoolean(rules.compress) && rules.format === 'png') {
       rules.compress = true
     }
 
@@ -217,10 +246,10 @@ const _actions = {
    * @returns {string}
    */
   stringifyRule(rules) {
-    const filterRules = _actions.filterRules(rules)
+    let filterRules = _actions.filterRules(rules)
 
     // 处理针对格式的优化
-    rules = _actions.optimizeRules(rules)
+    filterRules = _actions.optimizeRules(filterRules)
 
     // 不存在值时，直接返回空字符串
     if (Object.keys(filterRules).length === 0) {
@@ -332,8 +361,12 @@ ImageFormat.install = async function (Vue, {
     let finalRules = _actions.getFinalOtherRules(originOtherRules)
     // 最终的DPR
     let finalDPR = _actions.getFinalDPR(networkType, DPR, maxDPR)
+    // 最终的缩放取值
+    let finalScale = originScale || scale
+    // 最终的质量取值
+    let finalQuality = originQuality || quality
     // 最终的图片尺寸
-    let finalSize = _actions.getFinalSize(originSize, finalDPR, draftRatio)
+    let finalSize = _actions.getFinalSize(originSize, finalScale, finalDPR, draftRatio)
 
     // 获取图片宽度
     let width
@@ -343,10 +376,6 @@ ImageFormat.install = async function (Vue, {
 
     // 最终的图片格式
     let finalFormat = _actions.getFinalFormat(originFormat, _actions.getFileExtension(src), width, minWidth, finalRules.lossless)
-    // 最终的缩放取值
-    let finalScale = originScale || scale
-    // 最终的质量取值
-    let finalQuality = originQuality || quality
 
     logger.log('final image size:', finalSize)
     logger.log('final image DPR:', finalDPR)
