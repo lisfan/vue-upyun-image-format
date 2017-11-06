@@ -8,13 +8,11 @@
 import validation from '@~lisfan/validation'
 import Logger from '@~lisfan/logger'
 
-import RULES from './config/rules'
-
 import getNetworkType from './utils/get-network-type'
 import isWebpSupport from './utils/webp-features-support'
 import computeDefaultFormat from './utils/compute-default-format'
 
-let UpyunImageClipper = {} // 插件对象
+let ImageFormat = {} // 插件对象
 const FILTER_NAMESPACE = 'image-format' // 过滤器名称
 const PLUGIN_TYPE = 'filter'
 
@@ -158,6 +156,20 @@ const _actions = {
     return finalOtherRules
   },
   /**
+   * 根据图片格式进一步优化规则
+   * 目前只有两条规则，所以不采用策略，直接进行逻辑判断
+   */
+  optimizeRules(rules) {
+    // 若未jpg格式，且不存在模糊到清晰配置时，
+    if (!validation.isBoolean(rules.progressive) && rules.format === 'jpg') {
+      rules.progressive = true
+    } else if (!validation.isBoolean(rules.progressive) && rules.format === 'png') {
+      rules.compress = true
+    }
+
+    return rules
+  },
+  /**
    * 序列化规则
    * 值不存在时，则表示wgkqe和默认值
    * @param {object} rules - 规则配置
@@ -165,21 +177,25 @@ const _actions = {
    */
   stringifyRule(rules) {
     // 合并默认规则配置
-    rules = {
-      ...RULES,
-      ..._actions.filterRules(rules),
-    }
+    // rules = {
+    //   ...RULES,
+    //   ..._actions.filterRules(rules),
+    // }
 
+    // 再次过滤
     const filterRules = _actions.filterRules(rules)
 
     const len = Object.keys(filterRules).length
+
+    // 处理针对格式的优化
+    rules = _actions.optimizeRules(rules)
 
     // 不存在值时，直接返回空字符串
     if (len === 0) {
       return ''
     }
 
-    // 提前取出缩放方式(scale)和尺寸(size)进行设置
+    // 提前取出缩放方式(scale)和尺寸(size)进行额外的处理
     let imageSrc = validation.isNil(filterRules.size) ? '' : `/${filterRules.scale}/${filterRules.size}`
 
     imageSrc += Object.entries(filterRules).reduce((result, [key, value]) => {
@@ -210,12 +226,12 @@ const _actions = {
  * @param {string} [options.rules=''] - 又拍云图片格式化的其他规则
  * @param {function} [options.networkHandler=xxxx] - 获取网络制式的处理函数
  */
-UpyunImageClipper.install = async function (Vue, {
+ImageFormat.install = async function (Vue, {
   debug = false,
   maxDPR = 3,
   draftRatio = 2,
-  scale = RULES.scale,
-  quality = RULES.quality,
+  scale = 'both',
+  quality = 90,
   rules = '',
   minWidth = global.document.documentElement.clientWidth * global.devicePixelRatio / 2,
   networkHandler = getNetworkType
@@ -240,7 +256,7 @@ UpyunImageClipper.install = async function (Vue, {
    * @param {?number} [quality=90] - 又拍云jpg格式图片默认质量
    * @param {?string|object} [rules=''] - 又拍云的其他规则，注意，他是一个键值对的关系，不要随意乱写，这里的值不会覆盖前面已定义过的值
    */
-  Vue.filter(FILTER_NAMESPACE, (src, sizeOrConfig, customScale = scale, customformat, customQuality = quality, otherRules = rules) => {
+  Vue.filter(FILTER_NAMESPACE, (src, sizeOrConfig, customScale = scale, customformat, customQuality = quality, customOtherRules = rules) => {
     // 如果未传入图片地址，则返回空值
     if (validation.isUndefined(src) || validation.isEmpty(src)) {
       return ''
@@ -250,36 +266,37 @@ UpyunImageClipper.install = async function (Vue, {
     const networkType = networkHandler() || 'unknow' // 当前网络制式，每次重新获取，因网络随时会变化
 
     // 如果size是一个对象，则表示是以字典的方式进行配置参数
-    let size, scale, format, quality, rules
+    let originSize, originScale, originFormat, originQuality, originOtherRules
     if (validation.isPlainObject(sizeOrConfig)) {
-      const { size: sizeOption, scale: scaleOption, format: formatOption, quality: qualityOption, ...rulesOption } = sizeOrConfig
+      const { size: sizeOption, scale: scaleOption, format: formatOption, quality: qualityOption, ...otherRulesOption } = sizeOrConfig
 
-      size = sizeOption
-      scale = scaleOption
-      format = formatOption
-      quality = qualityOption
-      rules = rulesOption
+      originSize = sizeOption
+      originScale = scaleOption
+      originFormat = formatOption
+      originQuality = qualityOption
+      originOtherRules = otherRulesOption
     } else {
-      size = sizeOrConfig
-      scale = customScale
-      format = customformat
-      quality = customQuality
-      rules = otherRules
+      originSize = sizeOrConfig
+      originScale = customScale
+      originFormat = customformat
+      originQuality = customQuality
+      originOtherRules = customOtherRules
     }
 
     logger.log('network:', networkType)
-    logger.log('origin dpr:', DPR)
-    logger.log('draftRatio:', draftRatio)
     logger.log('origin image src:', src)
-    logger.log('origin image size:', size)
-    logger.log('origin rules:', rules)
+    logger.log('origin image size:', originSize)
+    logger.log('origin image format:', originFormat)
+    logger.log('origin image scale:', originScale)
+    logger.log('origin image quality:', originQuality)
+    logger.log('origin rules:', originOtherRules)
 
     let finalDPR = _actions.getFinalDPR(networkType, DPR, maxDPR) // 最终的DPR取值
-    let finalSize = _actions.getFinalSize(size, finalDPR, draftRatio) // 最终的尺寸取值
-    let finalFormat = _actions.getFinalFormat(format, _actions.getFileExtension(src), finalSize.split('x')[0], minWidth) // 最终的图片格式
-    let finalScale = scale || RULES.scale // 最终的缩放取值
-    let finalQuality = quality || RULES.quality // 最终的质量取值
-    let finalRules = _actions.getFinalOtherRules(logger, rules) // 最终的其他规则取值
+    let finalSize = _actions.getFinalSize(originSize, finalDPR, draftRatio) // 最终的尺寸取值
+    let finalFormat = _actions.getFinalFormat(originFormat, _actions.getFileExtension(src), finalSize.split('x')[0], minWidth) // 最终的图片格式
+    let finalScale = originScale || scale // 最终的缩放取值
+    let finalQuality = originQuality || quality // 最终的质量取值
+    let finalRules = _actions.getFinalOtherRules(logger, originOtherRules) // 最终的其他规则取值
 
     logger.log('final image size:', finalSize)
     logger.log('final image DPR:', finalDPR)
@@ -307,4 +324,4 @@ UpyunImageClipper.install = async function (Vue, {
   })
 }
 
-export default UpyunImageClipper
+export default ImageFormat
