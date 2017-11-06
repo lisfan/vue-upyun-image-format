@@ -9,7 +9,7 @@ import validation from '@~lisfan/validation'
 import Logger from '@~lisfan/logger'
 
 import getNetworkType from './utils/get-network-type'
-import isWebpSupport from './utils/webp-features-support'
+import isWebp from './utils/webp-features-support'
 import computeDefaultFormat from './utils/compute-default-format'
 
 let ImageFormat = {} // 插件对象
@@ -18,9 +18,6 @@ const PLUGIN_TYPE = 'filter'
 
 // 私有方法
 const _actions = {
-  isWebpSupport,
-  computeDefaultFormat,
-
   /**
    * 获取图片后缀
    */
@@ -90,7 +87,7 @@ const _actions = {
     //   - 则判断源图片jpg或png格式，则判断是否支持有损webp格式，
     // 如果指定了自定义值，则使用自定义值
     if (!validation.isString(format)) {
-      return _actions.computeDefaultFormat(originFormat, width, minWidth,)
+      return computeDefaultFormat(originFormat, width, minWidth)
     }
 
     if (format === 'webp') {
@@ -98,9 +95,9 @@ const _actions = {
       // todo 是否强制指定了无损
       // 如果用户指定了图片格式，则以用户自定义为主
       // 若不支持，则动态webp转换为gif格式，其他格式统一转换为jpg格式
-      if (originFormat === 'gif' && !_actions.isWebpSupport['animation']) {
+      if (originFormat === 'gif' && !isWebp.support('animation')) {
         return 'gif'
-      } else if (originFormat.match(/jpeg|jpg|png/) && !_actions.isWebpSupport['lossy']) {
+      } else if (originFormat.match(/jpeg|jpg|png/) && !isWebp.support('lossy')) {
         return 'jpg'
       } else {
         return 'webp'
@@ -291,12 +288,12 @@ ImageFormat.install = async function (Vue, {
     logger.log('origin image quality:', originQuality)
     logger.log('origin rules:', originOtherRules)
 
+    let finalRules = _actions.getFinalOtherRules(logger, originOtherRules) // 最终的其他规则取值
     let finalDPR = _actions.getFinalDPR(networkType, DPR, maxDPR) // 最终的DPR取值
     let finalSize = _actions.getFinalSize(originSize, finalDPR, draftRatio) // 最终的尺寸取值
-    let finalFormat = _actions.getFinalFormat(originFormat, _actions.getFileExtension(src), finalSize.split('x')[0], minWidth) // 最终的图片格式
+    let finalFormat = _actions.getFinalFormat(originFormat, _actions.getFileExtension(src), finalSize.split('x')[0], minWidth, finalRules.lossless) // 最终的图片格式
     let finalScale = originScale || scale // 最终的缩放取值
     let finalQuality = originQuality || quality // 最终的质量取值
-    let finalRules = _actions.getFinalOtherRules(logger, originOtherRules) // 最终的其他规则取值
 
     logger.log('final image size:', finalSize)
     logger.log('final image DPR:', finalDPR)

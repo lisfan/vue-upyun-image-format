@@ -1,6 +1,6 @@
 {
   "name": "@~lisfan/vue-upyun-image-clipper",
-  "version": "1.0.0-alpha.0",
+  "version": "2.0.0-alpha.0",
   "description": "vue过滤器插件-又拍云图片裁剪器：根据DPR尺寸处理显示的图片大小",
   "main": "src/index.js",
   "scripts": {
