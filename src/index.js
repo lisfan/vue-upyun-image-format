@@ -44,12 +44,12 @@ const _actions = {
    * @returns {number}
    */
   getFinalDPR(networkType, DPR, maxDPR) {
-    if (networkType === '4g') {
+    if (networkType === '4g' || networkType === 'unknow') {
       return DPR >= maxDPR ? maxDPR : DPR
     } else if (networkType === 'wifi') {
       return DPR
     } else {
-      return 1
+      1
     }
   },
   /**
@@ -221,20 +221,21 @@ const _actions = {
 }
 
 /**
- * 又拍云图片格式化注册函数
- * 规则请参考[又拍云文档](http://docs.upyun.com/cloud/image/#webp)
+ * 又拍云图片处理注册函数
+ * 处理规则请参考[又拍云文档](http://docs.upyun.com/cloud/image/#webp)
  *
- * 值可以是null或者undefined，当是这个值的时候，使用默认值
- * 又拍云图片上传默认未压缩
+ * 若想针对某个值使用默认值，则传入null值即可
+ *
  * @param {Vue} Vue - Vue类
  * @param {object} [options={}] - 配置选项
- * @param {boolean} [options.debug=false] - 是否开启日志调试模式，默认关闭
- * @param {number} [options.maxDPR=3] - 4g网络下，DPR取值的最大数，默认值为3
- * @param {number} [options.draftRatio=2] - UI设计稿尺寸与设备物理尺寸的比例，默认值为2
- * @param {number} [options.quality=90] - 又拍云jpg格式图片默认质量
+ * @param {boolean} [options.debug=false] - 是否开启日志调试模式
+ * @param {number} [options.maxDPR=3] - (4|5)g网络或者'unknow'未知网络下，DPR取值的最大数
+ * @param {number} [options.draftRatio=2] - UI设计稿尺寸与设备物理尺寸的比例
  * @param {string} [options.scale='both'] - 又拍云图片尺寸缩放方式，默认宽度进行自适应，超出尺寸进行裁剪，若自定义尺寸大于原尺寸时，自动缩放至指定尺寸再裁剪
- * @param {string} [options.rules=''] - 又拍云图片格式化的其他规则
- * @param {function} [options.networkHandler=xxxx] - 获取网络制式的处理函数
+ * @param {number} [options.quality=90] - 又拍云jpg格式图片压缩质量
+ * @param {string} [options.rules=''] - 又拍云图片处理的其他规则
+ * @param {number} [options.minWidth] - 默认值是(当前设备的物理分辨率 * 当前实际设备像素比的) 二分之一
+ * @param {function} [options.networkHandler='unknow'] - 获取网络制式的处理函数，若不存在，返回unknow
  */
 ImageFormat.install = async function (Vue, {
   debug = false,
@@ -257,26 +258,29 @@ ImageFormat.install = async function (Vue, {
   }
 
   /**
-   * 接受四个参数
+   * 接受六个参数
+   * 第一个参数vue组件会自动传入，无须管理
    *
    * @param {string} src - 图片地址
-   * @param {?number|string|object} [size] - 裁剪尺寸，取设计稿中的尺寸即可，如果是一个配置对象，则无视后面的参数配置
-   * @param {?string} [scale='both'] - 又拍云图片尺寸缩放方式
-   * @param {?string} [format] - 又拍云图片格式化，不同条件有不同的选择，具体格式按具体场景区分
-   * @param {?number} [quality=90] - 又拍云jpg格式图片默认质量
-   * @param {?string|object} [rules=''] - 又拍云的其他规则，注意，他是一个键值对的关系，不要随意乱写，这里的值不会覆盖前面已定义过的值
+   * @param {?number|string|object} [sizeOrConfig] - 裁剪尺寸，jjgj取设计稿中的尺寸即可，该值如果是一个字典格式的配置对象，则会其他参数选项的值
+   * @param {?string} [scale='both'] - 缩放方式
+   * @param {?string} [format] - 图片格式化，系统会根据多种情况来最终确定该值的默认值
+   * @param {?number} [quality=90] - 若输出jpg格式图片时的压缩质量
+   * @param {?string|object} [rules=''] -
+   *   又拍云图片处理的的其他规则，注意，如果它是一个字符串格式是，那么它必须是采用`/[key]/[value]`这样的写法，不能随意乱写，同时这里的值不会覆盖前几个参数的值，该项的优先级最低
    */
   Vue.filter(FILTER_NAMESPACE, (src, sizeOrConfig, customScale = scale, customformat, customQuality = quality, customOtherRules = rules) => {
-    // 如果未传入图片地址，则返回空值
+    // 如果未传入图片地址，则直接返回空值
     if (validation.isUndefined(src) || validation.isEmpty(src)) {
       return ''
     }
 
-    const DPR = global.devicePixelRatio || 1 // 当前设备DPR
+    const DPR = global.devicePixelRatio || 1 // 当前设备的DPR值
     const networkType = networkHandler() || 'unknow' // 当前网络制式，每次重新获取，因网络随时会变化
 
     // 如果size是一个对象，则表示是以字典的方式进行配置参数
     let originSize, originScale, originFormat, originQuality, originOtherRules
+
     if (validation.isPlainObject(sizeOrConfig)) {
       const { size: sizeOption, scale: scaleOption, format: formatOption, quality: qualityOption, ...otherRulesOption } = sizeOrConfig
 
@@ -301,12 +305,18 @@ ImageFormat.install = async function (Vue, {
     logger.log('origin image quality:', originQuality)
     logger.log('origin rules:', originOtherRules)
 
-    let finalRules = _actions.getFinalOtherRules(originOtherRules) // 最终的其他规则取值
-    let finalDPR = _actions.getFinalDPR(networkType, DPR, maxDPR) // 最终的DPR取值
-    let finalSize = _actions.getFinalSize(originSize, finalDPR, draftRatio) // 最终的尺寸取值
-    let finalFormat = _actions.getFinalFormat(originFormat, _actions.getFileExtension(src), finalSize.split('x')[0], minWidth, finalRules.lossless) // 最终的图片格式
-    let finalScale = originScale || scale // 最终的缩放取值
-    let finalQuality = originQuality || quality // 最终的质量取值
+    // 最终的其他规则
+    let finalRules = _actions.getFinalOtherRules(originOtherRules)
+    // 最终的DPR
+    let finalDPR = _actions.getFinalDPR(networkType, DPR, maxDPR)
+    // 最终的图片尺寸
+    let finalSize = _actions.getFinalSize(originSize, finalDPR, draftRatio)
+    // 最终的图片格式
+    let finalFormat = _actions.getFinalFormat(originFormat, _actions.getFileExtension(src), finalSize.split('x')[0], minWidth, finalRules.lossless)
+    // 最终的缩放取值
+    let finalScale = originScale || scale
+    // 最终的质量取值
+    let finalQuality = originQuality || quality
 
     logger.log('final image size:', finalSize)
     logger.log('final image DPR:', finalDPR)
@@ -315,6 +325,7 @@ ImageFormat.install = async function (Vue, {
     logger.log('final image format:', finalFormat)
     logger.log('final image custom rules:', finalRules)
 
+    // 序列化规则
     const stringifyRule = _actions.stringifyRule({
       ...finalRules,
       format: finalFormat,
