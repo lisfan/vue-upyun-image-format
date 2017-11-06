@@ -5,7 +5,10 @@
 import validation from '@~lisfan/validation'
 import Logger from '@~lisfan/logger'
 
-const logger = new Logger('webp-features')
+const logger = new Logger({
+  name: 'webp-features',
+  debug: false
+})
 
 // 将检测结果存储在sessionStorage中，期间只检测一次，避免重复求值
 const storageName = 'WEBP_FEATURES'

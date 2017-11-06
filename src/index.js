@@ -10,7 +10,6 @@ import Logger from '@~lisfan/logger'
 
 import getNetworkType from './utils/get-network-type'
 import isWebp from './utils/webp-features-support'
-import computeDefaultFormat from './utils/compute-default-format'
 
 let ImageFormat = {} // 插件对象
 const PLUGIN_TYPE = 'filter' // 插件类型
@@ -82,10 +81,34 @@ const _actions = {
     return isValidSize ? finalSizeList.join('x') : null
   },
   /**
+   * 根据条件确定默认输出图片格式
+   *
+   * - 根据浏览器对webp的支持力度及其他一些情况，用户上传的图片如果是非webp格式或jpg格式，如源图是png的，则会按照以下不同的场景转换成webp或jpg
+   * - (静态，支持有损webp，图片宽小于设备物理分辨率*dpr的2分之1时或小于200px*dpr时)，使用webp格式（又拍云api: `/format/webp`）
+   *  - (静态，支持有损webp，图片宽大于设备物理分辨率*dpr的2分之1时且大于200px*dpr时)，使用jpg格式（又拍云api: `/format/jpg`）
+   *  - (静态，不支持webp)，使用jpg格式（又拍云api: `/format/jpg`）
+   *  - (动态，支持动态webp时)，使用webp格式（又拍云api: `/format/webp`）
+   *  - (动态，不支持动态webp时)，使用gif格式，不作变动
+   *
+   * @param {string} originFormat - 原格式
+   * @param {number} width - 用户自定义的宽度
+   * @param {number} minWidth - 最小宽度
+   * @returns {string}
+   */
+  computeDefaultFormat(originFormat, width, minWidth) {
+    // 如果源文件是动态图片且支持动态webp时，则转换为webp
+    if (originFormat === 'gif') {
+      return isWebp.support('animation') ? 'webp' : 'gif'
+    } else {
+      // 如果支持静态webp
+      return isWebp.support('lossy') && width >= 0 && minWidth >= width ? 'webp' : 'jpg'
+    }
+  },
+  /**
    * 根据条件，获取最终的图片格式
    * @param {string} format - 自定义格式
    * @param {string} originFormat - 原格式
-   * @param {number} width - 自定义尺寸
+   * @param {?number} width - 自定义尺寸
    * @param {number} minWidth - 最小尺寸
    * @param {boolean} [lossless] - 是否转换为无损webp格式
    * @returns {string}
@@ -98,7 +121,7 @@ const _actions = {
     //   - 若源图片jpg或png格式，则检测是否支持有损webp格式或无损webp格式
     // 如果指定了自定义值，则使用自定义值
     if (!validation.isString(format)) {
-      return computeDefaultFormat(originFormat, width, minWidth)
+      return _actions.computeDefaultFormat(originFormat, width, minWidth)
     }
 
     if (format === 'webp') {
@@ -311,8 +334,15 @@ ImageFormat.install = async function (Vue, {
     let finalDPR = _actions.getFinalDPR(networkType, DPR, maxDPR)
     // 最终的图片尺寸
     let finalSize = _actions.getFinalSize(originSize, finalDPR, draftRatio)
+
+    // 获取图片宽度
+    let width
+    if (validation.isString(finalSize)) {
+      width = finalSize.split('x')[0]
+    }
+
     // 最终的图片格式
-    let finalFormat = _actions.getFinalFormat(originFormat, _actions.getFileExtension(src), finalSize.split('x')[0], minWidth, finalRules.lossless)
+    let finalFormat = _actions.getFinalFormat(originFormat, _actions.getFileExtension(src), width, minWidth, finalRules.lossless)
     // 最终的缩放取值
     let finalScale = originScale || scale
     // 最终的质量取值
