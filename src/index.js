@@ -1,7 +1,7 @@
 /**
- * @file 又拍云图片格式化插件
+ * @file 又拍云图片处理工具插件
  * @author lisfan <goolisfan@gmail.com>
- * @version 1.0.0
+ * @version 2.0.0
  * @licence MIT
  */
 
@@ -11,13 +11,14 @@ import Logger from '@~lisfan/logger'
 import getNetworkType from './utils/get-network-type'
 import isWebp from './utils/webp-features-support'
 
-let ImageFormat = {} // 插件对象
+let UPYunImageFormat = {} // 插件对象
 const PLUGIN_TYPE = 'filter' // 插件类型
 const FILTER_NAMESPACE = 'image-format' // 过滤器名称
 
 /**
  * 又拍云缩放方式，各种缩放规则所需要的尺寸参数长度
  *
+ * @ignore
  * @enum {number}
  */
 const SCALE_PARAM_LEN = {
@@ -36,12 +37,14 @@ const SCALE_PARAM_LEN = {
   fxfn2: 2,
   fp: 1,
 }
+
 // 私有方法
 const _actions = {
   /**
    * 获取图片后缀
    * 【注】假设图片文件末尾都是以存在后缀的，未兼容处理那些不带后缀形式的图片文件
    *
+   * @since 2.0.0
    * @param {string} filename - 文件名称
    * @returns {string}
    */
@@ -58,6 +61,7 @@ const _actions = {
   /**
    * 根据当前的网络制式，获取最终的DPR值
    *
+   * @since 2.0.0
    * @param {string} networkType - 网络制式类型
    * @param {number} DPR - 设备像素比
    * @param {number} maxDPR - 支持的最大设备像素比
@@ -75,6 +79,7 @@ const _actions = {
   /**
    * 获取最终的图片尺寸
    *
+   * @since 2.0.0
    * @param {?number|string} size - 自定义尺寸
    * @param {string} finalScale - 最终缩放格式
    * @param {number} finalDPR - 最终DPR值
@@ -125,6 +130,7 @@ const _actions = {
    *  - (动态，支持动态webp时)，使用webp格式（又拍云api: `/format/webp`）
    *  - (动态，不支持动态webp时)，使用gif格式，不作变动
    *
+   * @since 2.0.0
    * @param {string} originFormat - 原格式
    * @param {number} width - 用户自定义的宽度
    * @param {number} minWidth - 最小宽度
@@ -141,6 +147,8 @@ const _actions = {
   },
   /**
    * 根据条件，获取最终的图片格式
+   *
+   * @since 2.0.0
    * @param {string} format - 自定义格式
    * @param {string} originFormat - 原格式
    * @param {?number} width - 自定义尺寸
@@ -180,6 +188,7 @@ const _actions = {
    * 获取自定义的其他又拍云规则项
    * [注] 规则项需要有对应关系，不可随意填写
    *
+   * @since 2.0.0
    * @param {object} otherRules- 其他又拍云规则项
    * @returns {object}
    */
@@ -214,6 +223,8 @@ const _actions = {
   },
   /**
    * 过滤为undefined、null及空值
+   *
+   * @since 2.0.0
    * @param {object} rules - 规则配置
    * @returns {object}
    */
@@ -231,6 +242,7 @@ const _actions = {
    * 根据图片格式进一步优化规则
    * 目前只有两条规则，所以不采用策略，直接进行逻辑判断
    *
+   * @since 2.0.0
    * @param {object} rules - 优化规则
    * @return {object}
    */
@@ -247,6 +259,7 @@ const _actions = {
   /**
    * 序列化规则为符合格式的字符串
    *
+   * @since 2.0.0
    * @param {object} rules - 规则配置
    * @returns {string}
    */
@@ -283,11 +296,13 @@ const _actions = {
 }
 
 /**
- * 又拍云图片处理注册函数
+ * 又拍云图片处理工具注册函数
  * 处理规则请参考[又拍云文档](http://docs.upyun.com/cloud/image/#webp)
  *
  * 若想针对某个值使用默认值，则传入null值即可
  *
+ * @global
+ * @since 2.0.0
  * @param {Vue} Vue - Vue类
  * @param {object} [options={}] - 配置选项
  * @param {boolean} [options.debug=false] - 是否开启日志调试模式
@@ -299,7 +314,7 @@ const _actions = {
  * @param {number} [options.minWidth] - 默认值是(当前设备的物理分辨率 * 当前实际设备像素比的) 二分之一
  * @param {function} [options.networkHandler='unknow'] - 获取网络制式的处理函数，若不存在，返回unknow
  */
-ImageFormat.install = async function (Vue, {
+UPYunImageFormat.install = async function (Vue, {
   debug = false,
   maxDPR = 3,
   draftRatio = 2,
@@ -320,11 +335,13 @@ ImageFormat.install = async function (Vue, {
   }
 
   /**
-   * 接受六个参数
-   * 第一个参数vue组件会自动传入，无须管理
+   * vue过滤器：image-format
    *
-   * @param {string} src - 图片地址
-   * @param {?number|string|object} [sizeOrConfig] - 裁剪尺寸，jjgj取设计稿中的尺寸即可，该值如果是一个字典格式的配置对象，则会其他参数选项的值
+   * @global
+   * @function image-format
+   * @since 2.0.0
+   * @param {string} src - 图片地址，第一个参数vue组件会自动传入，无须管理
+   * @param {?number|string|object} [sizeOrConfig] - 裁剪尺寸，取设计稿中的尺寸即可，该值如果是一个字典格式的配置对象，则会其他参数选项的值
    * @param {?string} [scale='both'] - 缩放方式
    * @param {?string} [format] - 图片格式化，系统会根据多种情况来最终确定该值的默认值
    * @param {?number} [quality=90] - 若输出jpg格式图片时的压缩质量
@@ -414,4 +431,4 @@ ImageFormat.install = async function (Vue, {
   })
 }
 
-export default ImageFormat
+export default UPYunImageFormat

@@ -33,6 +33,7 @@ const IMAGES_SOURCE = {
 
 /**
  * 检测webp特性的支持程度
+ * @ignore
  * @param {string} feature - 特性值
  * @returns {Promise}
  */
