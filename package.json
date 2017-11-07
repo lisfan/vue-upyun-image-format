@@ -1,0 +1,42 @@
+{
+  "name": "@~lisfan/vue-upyun-image-format",
+  "version": "2.0.0",
+  "description": "vue过滤器插件-又拍云图片处理工具：默认以指定的策略规则进行了处理优化",
+  "main": "src/index.js",
+  "scripts": {
+    "pub-pre": "git pull && npm version prerelease",
+    "pub-n": "npm run pub-pre && npm publish --tag nightly && npm run pub-post",
+    "pub-a": "npm run pub-pre && npm publish --tag alpha && npm run pub-post",
+    "pub-b": "npm run pub-pre && npm publish --tag beta && npm run pub-post",
+    "pub-rc": "npm run pub-pre && npm publish --tag rc && npm run pub-post",
+    "pub-l": "npm run pub-pre && npm publish && npm run pub-post",
+    "pub": "git pull && npm publish && npm run pub-post",
+    "pub-post": "git commit -am \"chore: publish@$npm_package_version\" && git push",
+    "docs": "rm -rf docs && jsdoc -c conf/jsdoc.config.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lisfan/vue-upyun-image-format.git"
+  },
+  "keywords": [
+    "upyun",
+    "image-format",
+    "vue",
+    "plugin",
+    "image-optimize"
+  ],
+  "author": "lisfan <goolisfan@gmail.com> (https://www.npmjs.com/~lisfan)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lisfan/vue-upyun-image-format/issues"
+  },
+  "homepage": "https://github.com/lisfan/vue-upyun-image-format#readme",
+  "dependencies": {
+    "@~lisfan/logger": "^1.0.0",
+    "@~lisfan/validation": "^1.0.0"
+  },
+  "devDependencies": {
+    "docdash": "~0.4.0",
+    "jsdoc": "~3.5.5"
+  }
+}
