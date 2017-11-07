@@ -13,7 +13,7 @@
 - 图片优化依赖了又拍云的处理服务，相应的图片处理规则请参考[又拍云文档](http://docs.upyun.com/cloud/image/#webp)
 - 根据当前设计稿和设备物理分辨率缩放比，及设备的DPR值，计算出实际的图片尺寸
 - 由于 [NetworkInformation API](https://developer.mozilla.org/en-US/docs/Web/API/NetworkInformation)支持力度差，所以需要外部额外传入一个获取网络制式的方式（比如平台入口是微信或支付宝的）
-- 使用格式：<img :src="图片地址 | image-format([sizeOrConfig],[scale = 'both'],[format],[quality],[otherRules])" />
+- 使用格式：`<img :src="图片地址 | image-format([sizeOrConfig],[scale = 'both'],[format],[quality],[otherRules])" />`
 
 ## Install 安装
 
@@ -72,7 +72,7 @@ Vue.use(VueUpyunImageFormat, {
 
 ## 附：又拍云图片处理的研究报告
 
-**注：该测试是建立在使用又拍云的图片处理服务的，所以其他场景下结果会有不同，不要延用**
+**注1：该测试是建立在使用又拍云的图片处理服务的，所以其他场景下结果会有不同，不要沿用**
 
 **注2：本测试只考虑了图片的容量对加载速度的影响，并不考虑因图片格式的不同，而造成的浏览器渲染图片速度的问题**
 
@@ -81,7 +81,7 @@ Vue.use(VueUpyunImageFormat, {
 ### 静态图源（`png/jpg/webp`）的对比（ 同一图源，相同尺寸下 ）
 
 1. 未使用任何优化的情况下
-  - 容量比较：png > 无损webp > jpg > 有损webp
+  - png > 无损webp > jpg > 有损webp
 2. 使用压缩优化(`compress/true`)的情况下：压缩后的png比未压缩小64%，压缩jpg比未压缩小5%
   - png > 无损webp > 压缩png > jpg > 压缩jpg > 有损webp
 3. png设置了压缩优化后(`compress/true`)
@@ -111,7 +111,7 @@ Vue.use(VueUpyunImageFormat, {
 
 3. gif转换为有损webp，并没有明显的不适感
 
-## 实行约定（也是该插件的内部默认优化方案）
+## 实行约定（也是该插件的内部默认优化策略）
 
 ### 图片格式
 
@@ -125,9 +125,9 @@ Vue.use(VueUpyunImageFormat, {
 
 ### 图片质量
 
-- 图片格式为 jpg 格式时，使用90%的质量压缩（又拍云api: `/quality/90`）
-- 图片格式为 png 格式时，默认使用压缩优化（又拍云api: `/compress/true`）
-- 图片格式为 web 格式时，不作变动
+- 图片格式为 jpg 格式时，使用90%压缩质量（又拍云api: `/quality/90`）
+- 图片格式为 png 格式时，使用压缩优化（又拍云api: `/compress/true`）
+- 图片格式为 webp 格式时，使用有损webp
 - 图片格式为 gif 格式时，不作变动
 
 ### 图片尺寸
@@ -136,8 +136,8 @@ Vue.use(VueUpyunImageFormat, {
 
 ### 其他优化
 
-- 图片格式为 jpg 格式时，启用模糊到清晰的渐进加载效果（又拍云api: `/progressive/true`）
+图片格式为 jpg 格式时，启用模糊到清晰的**渐进加载**效果（又拍云api: `/progressive/true`）
 
 ### 注意点
 
-- 图片格式为 jpg 格式时，同时使用渐进加载和压缩优化会有冲突，表现为渐进加载是一个从灰阶图片到彩色图片的渲染
+图片格式为 jpg 格式时，同时使用**渐进加载**和**压缩优化**会有冲突，具体表现：渐进加载是一个从灰阶图片到彩色图片的渲染
