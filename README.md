@@ -82,18 +82,18 @@ Vue.use(VueUpyunImageFormat, {
 
 1. 未使用任何优化的情况下
   - png > 无损webp > jpg > 有损webp
-2. 使用压缩优化(`compress/true`)的情况下：压缩后的png比未压缩小64%，压缩jpg比未压缩小5%
+2. 使用压缩优化(`compress/true`)的情况下：压缩后的png比未压缩优化约65%，压缩jpg比未压缩优化约5%
   - png > 无损webp > 压缩png > jpg > 压缩jpg > 有损webp
 3. png设置了压缩优化后(`compress/true`)
-  - png -> png压缩算法，容量优化 64%
+  - png -> png压缩算法，容量优化约65%
 4. png转jpg，png转webp
-  - png -> jpg，容量优化 70%
-  - png -> webp，容量优化 95%
+  - png -> jpg，容量优化约70%
+  - png -> webp，容量优化约95%
 5. jpg转webp
-  - jpg -> webp，容量优化 80%
+  - jpg -> webp，容量优化约80%
 6. jpg设置了压缩质量(`quality/<number>`)后
-  - jpg 90%的质量下，比源图容量优化35%
-  - jpg 80%的质量下，比源图容量优化62%
+  - jpg 90%的质量下，容量优化35%
+  - jpg 80%的质量下，容量优化约60%
 7. png、webp、jpg图片质量相较时（纯肉眼判断）
   - jpg格式的色彩饱和度最好，饱满靓丽
   - png和webp饱和度质量相差无几，整体偏灰，饱和底下降会比较明显
@@ -106,9 +106,8 @@ Vue.use(VueUpyunImageFormat, {
 1. 未使用任何优化的情况下
   - 无损动态webp > gif > 有损动态webp
 2. gif转无损webp，gif转有损webp，
-  - gif -> 无损webp，比源图容量增加18%
-  - gif -> 有损webp，比源图容量增加62%
-
+  - gif -> 无损webp，容量增长约10%
+  - gif -> 有损webp，容量优化约80%
 3. gif转换为有损webp，并没有明显的不适感
 
 ## 实行约定（也是该插件的内部默认优化策略）
