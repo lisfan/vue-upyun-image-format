@@ -235,7 +235,7 @@ const _actions = {
    * @return {object}
    */
   optimizeRules(rules) {
-    // 若未jpg格式，且不存在模糊到清晰配置时，
+    // 若未jpg格式，且不存在渐进加载的配置时，
     if (!validation.isBoolean(rules.progressive) && rules.format === 'jpg') {
       rules.progressive = true
     } else if (!validation.isBoolean(rules.compress) && rules.format === 'png') {
@@ -264,7 +264,12 @@ const _actions = {
     // 提前取出缩放方式(scale)和尺寸(size)进行额外的处理，其他值做拼接
     let imageSrc = validation.isNil(filterRules.size) ? '' : `/${filterRules.scale}/${filterRules.size}`
 
-    imageSrc += Object.entries(filterRules).reduce((result, [key, value]) => {
+    // 规则按key名进行排序：解决相同的优化字段时，因key的顺序不同而造成再次进行图片处理
+    const sortedRules = Object.entries(filterRules).sort(([prevKey], [nextKey]) => {
+      return prevKey > nextKey
+    })
+
+    imageSrc += sortedRules.reduce((result, [key, value]) => {
       if (key === 'size' || key === 'scale') {
         return result
       }
