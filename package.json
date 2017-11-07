@@ -1,7 +1,7 @@
 {
-  "name": "@~lisfan/vue-upyun-image-clipper",
-  "version": "2.0.0-rc.0",
-  "description": "vue过滤器插件-又拍云图片裁剪器",
+  "name": "@~lisfan/vue-upyun-image-format",
+  "version": "2.0.0",
+  "description": "vue过滤器插件-又拍云图片处理工具器：默认以指定的策略规则进行了处理优化",
   "main": "src/index.js",
   "scripts": {
     "pub-pre": "git pull && npm version prerelease",
@@ -16,23 +16,23 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lisfan/vue-upyun-image-clipper.git"
+    "url": "git+https://github.com/lisfan/vue-upyun-image-format.git"
   },
   "keywords": [
     "upyun",
-    "image-clipper",
+    "image-format",
     "vue",
     "plugin",
-    "responsive"
+    "image-optimize"
   ],
   "author": "lisfan <goolisfan@gmail.com> (https://www.npmjs.com/~lisfan)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/lisfan/vue-upyun-image-clipper/issues"
+    "url": "https://github.com/lisfan/vue-upyun-image-format/issues"
   },
-  "homepage": "https://github.com/lisfan/vue-upyun-image-clipper#readme",
+  "homepage": "https://github.com/lisfan/vue-upyun-image-format#readme",
   "dependencies": {
-    "@~lisfan/logger": "~1.3.0",
+    "@~lisfan/logger": "^1.0.0",
     "@~lisfan/validation": "^1.0.0"
   },
   "devDependencies": {
