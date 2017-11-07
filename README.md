@@ -23,14 +23,20 @@ npm install -S @~lisfan/vue-upyun-image-format
 
 ## Usage 起步
 
-``` js
+```js
 import Vue from 'vue'
 import VueUpyunImageFormat from '@~lisfan/vue-upyun-image-format'
 
 // 注册指令
 // 以下是默认值
 Vue.use(VueUpyunImageFormat, {
-  debug: true,
+  debug: true, // 开启调试模式
+  maxDPR: 3, // (>=4)g网络或者'unknow'未知网络下，DPR取值的最大数
+  draftRatio: 2, // UI设计稿尺寸与设备物理尺寸的比例
+  scale: 'both', // 又拍云图片尺寸缩放方式，默认宽度进行自适应，超出尺寸进行裁剪，若自定义尺寸大于原尺寸时，自动缩放至指定尺寸再裁剪
+  quality: 90, // 又拍云jpg格式图片压缩质量
+  rules: '', // 又拍云图片处理的其他规则
+  minWidth: global.document.documentElement.clientWidth * global.devicePixelRatio / 2, //  默认值是(当前设备的物理分辨率 * 当前实际设备像素比的) 二分之一
   networkHandler() {
     // 获取网络制式的处理函数，如果实在不知道怎么获取，建议返回4g
     return '4g'

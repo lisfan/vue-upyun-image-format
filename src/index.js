@@ -306,7 +306,7 @@ const _actions = {
  * @param {Vue} Vue - Vue类
  * @param {object} [options={}] - 配置选项
  * @param {boolean} [options.debug=false] - 是否开启日志调试模式
- * @param {number} [options.maxDPR=3] - (4|5)g网络或者'unknow'未知网络下，DPR取值的最大数
+ * @param {number} [options.maxDPR=3] - (>=4)g网络或者'unknow'未知网络下，DPR取值的最大数
  * @param {number} [options.draftRatio=2] - UI设计稿尺寸与设备物理尺寸的比例
  * @param {string} [options.scale='both'] - 又拍云图片尺寸缩放方式，默认宽度进行自适应，超出尺寸进行裁剪，若自定义尺寸大于原尺寸时，自动缩放至指定尺寸再裁剪
  * @param {number} [options.quality=90] - 又拍云jpg格式图片压缩质量
