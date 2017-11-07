@@ -38,6 +38,14 @@ const SCALE_PARAM_LEN = {
   fp: 1,
 }
 
+const FORMAT_RULES = {
+  compress: /jpg|jpeg|png/,
+  format: /jpg|jpeg|png|webp/,
+  progressive: /jpg|jpeg/,
+  quality: /jpg|jpeg/,
+  lossless: /webp/,
+}
+
 // 私有方法
 const _actions = {
   /**
@@ -257,6 +265,33 @@ const _actions = {
     return rules
   },
   /**
+   * 针对图片格式，过滤规则
+   *
+   * 移除某些针对与具体格式或者属性时的规则
+   * - 如compress只能用在jpg和png上
+   * - 如format不支持值是gif
+   * - 如progressive只支持jpg
+   * - 如quality只支持jpg
+   * - 如lossless只支持webp
+   *
+   * @since 2.0.2
+   * @param {object} rules - 规则配置
+   * @return {object}
+   */
+  filterRulesByFormat(rules) {
+    const format = rules.format
+    // 未匹配到时进行过滤
+    Object.entries(FORMAT_RULES).forEach(([key, regexp]) => {
+      const matched = format.match(regexp)
+
+      if (!matched) {
+        rules[key] = null
+      }
+    })
+
+    return rules
+  },
+  /**
    * 序列化规则为符合格式的字符串
    *
    * @since 2.0.0
@@ -264,7 +299,8 @@ const _actions = {
    * @returns {string}
    */
   stringifyRule(rules) {
-    let filterRules = _actions.filterRules(rules)
+    const matchedRules = _actions.filterRulesByFormat(rules)
+    let filterRules = _actions.filterRules(matchedRules)
 
     // 处理针对格式的优化
     filterRules = _actions.optimizeRules(filterRules)
