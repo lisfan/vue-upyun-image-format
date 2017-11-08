@@ -1,7 +1,7 @@
 {
   "name": "@~lisfan/vue-upyun-image-format",
   "version": "2.0.2",
-  "description": "vue过滤器插件-又拍云图片处理工具：默认以指定的策略规则进行了处理优化",
+  "description": "vue过滤器插件-又拍云图片处理工具：默认以内置的优化策略进行处理",
   "main": "src/index.js",
   "scripts": {
     "pub-pre": "git pull && npm version prerelease",
