@@ -9,6 +9,8 @@
     "pub-a": "npm run pub-pre && npm publish --tag alpha && npm run pub-post",
     "pub-b": "npm run pub-pre && npm publish --tag beta && npm run pub-post",
     "pub-rc": "npm run pub-pre && npm publish --tag rc && npm run pub-post",
+    "pub-s": "npm run pub-pre && npm publish --tag stable && npm run pub-post",
+    "pub-x": "npm run pub-pre && npm publish --tag next && npm run pub-post",
     "pub-l": "npm run pub-pre && npm publish && npm run pub-post",
     "pub": "git pull && npm publish && npm run pub-post",
     "pub-post": "git commit -am \"chore: publish@$npm_package_version\" && git push",
