@@ -38,26 +38,30 @@ Vue.use(VueUpyunImageFormat, {
   rules: '', // 又拍云图片处理的其他规则
   minWidth: global.document.documentElement.clientWidth * global.devicePixelRatio / 2, //  默认值是(当前设备的物理分辨率 * 当前实际设备像素比的) 二分之一
   networkHandler() {
-    // 获取网络制式的处理函数，如果实在不知道怎么获取，建议返回4g
+    // 获取网络制式的处理函数，可配合微信和支付宝的sdk使用
+    // 如果实在不知道怎么获取，建议返回4g
     return '4g'
   }
 })
 ```
 
 ```html
-<!-- 无作何参数：使用原尺寸，内部使用默认优化策略，转换为jpg，压缩90%，并启用渐进载入 -->
+<!-- 无任何参数，接着内部优化策略自动执行：使用原尺寸，转换为jpg，并压缩质量到90%和启用渐进载入 -->
 <img :src="imageSrc | image-format">
 
-<!-- 使用原尺寸，转换为png，并启用png压缩优化算法 -->
-<img :src="imageSrc | image-format('200x300',null,'png')">
+<!-- 裁剪为200宽300高，接着内部优化策略自动执行：转换为jpg，并压缩质量到90%和启用渐进载入 -->
+<img :src="imageSrc | image-format('200x300')">
 
-<!-- 裁剪为500宽500高的尺寸，转换为jpg，压缩80% -->
-<img :src="imageSrc | image-format('500',null,null,80)">
+<!-- 裁剪为500宽500高的尺寸，裁剪方式为宽自适应，接着内部优化策略自动执行：转换为jpg，并压缩质量到90%和启用渐进载入 -->
+<img :src="imageSrc | image-format('500', 'fw')">
 
-<!-- 使用宽高适应缩放方式，以最小边为准，转换为jpg，不压缩质量 -->
-<img :src="imageSrc | image-format('500x100','fwfh',null,100)">
+<!-- 裁剪为200宽300高，并转换为png，接着内部优化策略自动执行：启用png压缩优化算法 -->
+<img :src="imageSrc | image-format('200x300', null, 'png')">
 
-<!-- 以字典方式进行配置 设置宽度为400px，不进行渐进载入，转换为jpg，压缩质量为50% -->
+<!-- 裁剪为500宽100高，使用宽高自适应缩放方式，且不压缩质量，接着内部优化策略自动执行：转换为jpg，启用渐进载入>
+<img :src="imageSrc | image-format('500x100', 'fwfh', null, 100)">
+
+<!-- 以字典方式进行配置，设置宽度为400px，缩放方式会自适应，压缩质量为50%，不进行渐进载入，接着内部优化策略自动执行：转换为jpg -->
 <img :src="imageSrc | image-format({
   size:'400',
   scale:'both',
@@ -65,9 +69,8 @@ Vue.use(VueUpyunImageFormat, {
   quality:50,
 })">
 
-<!-- 使用默认配置，但配置了一些其他规则：增加水印，你好 -->
-<img :src="imageSrc | image-format(null,null,null,null,'/watermark/text/5L2g5aW977yB')">
-
+<!-- 使用默认优化策略，但配置了一些其他规则：增加水印，你好 -->
+<img :src="imageSrc | image-format(null, null, null, null, '/watermark/text/5L2g5aW977yB')">
 ```
 
 ## 附：又拍云图片处理的研究报告
