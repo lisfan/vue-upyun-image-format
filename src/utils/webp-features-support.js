@@ -35,7 +35,7 @@ const IMAGES_SOURCE = {
  * 检测webp特性的支持程度
  * @ignore
  * @param {string} feature - 特性值
- * @returns {Promise}
+ * @return {Promise}
  */
 function checkWebpFeatures(feature) {
   return new Promise((resolve, reject) => {
@@ -81,7 +81,7 @@ export default {
    * 是否支持对应的webp特性
    *
    * @param {string} feature - 特性值
-   * @returns {boolean}
+   * @return {boolean}
    */
   support(feature) {
     return WEBP_FEATURES[feature]
