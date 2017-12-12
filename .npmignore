@@ -1,3 +1,9 @@
+# npm-publish
+conf/
+docs/
+.npmrc
+
+# copy from .gitignore
 # project
 # .project
 upyun.config.js

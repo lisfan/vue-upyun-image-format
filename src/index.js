@@ -54,7 +54,7 @@ const _actions = {
    *
    * @since 2.0.0
    * @param {string} filename - 文件名称
-   * @return {string}
+   * @returns {string}
    */
   getFileExtension(filename) {
     const extReg = /\.([^.]*)$/
@@ -73,7 +73,7 @@ const _actions = {
    * @param {string} networkType - 网络制式类型
    * @param {number} DPR - 设备像素比
    * @param {number} maxDPR - 支持的最大设备像素比
-   * @return {number}
+   * @returns {number}
    */
   getFinalDPR(networkType, DPR, maxDPR) {
     if (networkType === '4g' || networkType === 'unknow') {
@@ -92,7 +92,7 @@ const _actions = {
    * @param {string} finalScale - 最终缩放格式
    * @param {number} finalDPR - 最终DPR值
    * @param {number} draftRatio - 物理尺寸和UI草稿比
-   * @return {?string}
+   * @returns {?string}
    */
   getFinalSize(size, finalScale, finalDPR, draftRatio) {
     // 是否存在有效的尺寸值
@@ -142,7 +142,7 @@ const _actions = {
    * @param {string} originFormat - 原格式
    * @param {number} width - 用户自定义的宽度
    * @param {number} minWidth - 最小宽度
-   * @return {string}
+   * @returns {string}
    */
   computeDefaultFormat(originFormat, width, minWidth) {
     // 如果源文件是动态图片且支持动态webp时，则转换为webp
@@ -162,7 +162,7 @@ const _actions = {
    * @param {?number} width - 自定义尺寸
    * @param {number} minWidth - 最小尺寸
    * @param {boolean} [lossless] - 是否转换为无损webp格式
-   * @return {string}
+   * @returns {string}
    */
   getFinalFormat(format, originFormat, width, minWidth, lossless) {
     // 若未自定义图片格式，则根据一些条件，设置默认格式
@@ -198,7 +198,7 @@ const _actions = {
    *
    * @since 2.0.0
    * @param {object} otherRules- 其他又拍云规则项
-   * @return {object}
+   * @returns {object}
    */
   getFinalOtherRules(otherRules) {
     if (validation.isEmpty(otherRules)) {
@@ -234,7 +234,7 @@ const _actions = {
    *
    * @since 2.0.0
    * @param {object} rules - 规则配置
-   * @return {object}
+   * @returns {object}
    */
   filterRules(rules) {
     let filterRules = {}
@@ -252,7 +252,7 @@ const _actions = {
    *
    * @since 2.0.0
    * @param {object} rules - 优化规则
-   * @return {object}
+   * @returns {object}
    */
   optimizeRules(rules) {
     // 若未jpg格式，且不存在渐进加载的配置时，
@@ -276,7 +276,7 @@ const _actions = {
    *
    * @since 2.0.2
    * @param {object} rules - 规则配置
-   * @return {object}
+   * @returns {object}
    */
   filterRulesByFormat(rules) {
     const format = rules.format
@@ -296,7 +296,7 @@ const _actions = {
    *
    * @since 2.0.0
    * @param {object} rules - 规则配置
-   * @return {string}
+   * @returns {string}
    */
   stringifyRule(rules) {
     const matchedRules = _actions.filterRulesByFormat(rules)

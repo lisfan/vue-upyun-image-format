@@ -7,7 +7,7 @@
  *
  * [注] 检测浏览器是否支持navigator的connection API
  *
- * @return {string}
+ * @returns {string}
  */
 export default function getNetworkType() {
   // 检测NetworkInformation接口是否存在，若存在
