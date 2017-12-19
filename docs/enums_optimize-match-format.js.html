@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>utils/get-network-type.js - Documentation</title>
+    <title>enums/optimize-match-format.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,7 +27,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">utils/get-network-type.js</h1>
+    <h1 class="page-title">enums/optimize-match-format.js</h1>
     
 
     
@@ -38,24 +38,19 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * @file 获取网络制式
- * @since 1.0.0
+ *
+ * 指定的优化规则必须与图片格式匹配，否则无法应用该格式
+ *
+ * @since 2.0.0
+ *
+ * @enum {regexp}
  */
-
-/**
- * 获取网络制式
- *
- * [注] 检测浏览器是否支持navigator的connection API
- *
- * @since 1.0.0
- *
- * @returns {string}
- */
-export default function getNetworkType() {
-  // 检测NetworkInformation接口是否存在，若不存在，则返回unknow
-  return !navigator.connection
-    ? 'unknow'
-    : navigator.connection.effectiveType || 'unknow'
+export default {
+  compress: /jpg|jpeg|png/,
+  format: /jpg|jpeg|png|webp/,
+  progressive: /jpg|jpeg/,
+  quality: /jpg|jpeg/,
+  lossless: /webp/,
 }</code></pre>
         </article>
     </section>

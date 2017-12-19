@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>utils/get-network-type.js - Documentation</title>
+    <title>enums/scale-param-len.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,7 +27,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">utils/get-network-type.js</h1>
+    <h1 class="page-title">enums/scale-param-len.js</h1>
     
 
     
@@ -38,24 +38,27 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * @file 获取网络制式
- * @since 1.0.0
+ * 又拍云缩放方式规则，所需的尺寸参数长度
+ *
+ * @since 2.0.0
+ *
+ * @enum {number}
  */
-
-/**
- * 获取网络制式
- *
- * [注] 检测浏览器是否支持navigator的connection API
- *
- * @since 1.0.0
- *
- * @returns {string}
- */
-export default function getNetworkType() {
-  // 检测NetworkInformation接口是否存在，若不存在，则返回unknow
-  return !navigator.connection
-    ? 'unknow'
-    : navigator.connection.effectiveType || 'unknow'
+export default {
+  fw: 1,
+  fh: 1,
+  max: 1,
+  min: 1,
+  fwfh: 2,
+  fwfh2: 2,
+  both: 2,
+  sq: 1,
+  scale: 1,
+  wscale: 1,
+  hscale: 1,
+  fxfn: 2,
+  fxfn2: 2,
+  fp: 1,
 }</code></pre>
         </article>
     </section>
