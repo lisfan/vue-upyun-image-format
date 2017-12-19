@@ -46,9 +46,8 @@ const _actions = {
     const finalOtherRules = {}
 
     rules.forEach((value, index) => {
-      if (index % 2 === 0) {
-        finalOtherRules[value] = rules[index + 1]
-      }
+      // 条件不符合时，不增加值
+      if (index % 2 === 0) finalOtherRules[value] = rules[index + 1]
     })
 
     return finalOtherRules
@@ -139,11 +138,9 @@ const _actions = {
     const extReg = /\.([^.]*)$/
     const matched = filename.match(extReg)
 
-    if (!matched) {
-      return ''
-    }
-
-    return matched[1]
+    return !matched
+      ? ''
+      : matched[1]
   },
 
   /**
@@ -270,11 +267,7 @@ const _actions = {
     const format = rules.format
     // 未匹配到时进行过滤
     Object.entries(OPTIMIZE_MATCH_FORMAT).forEach(([key, regexp]) => {
-      const matched = format.match(regexp)
-
-      if (!matched) {
-        rules[key] = null
-      }
+      if (!regexp.test(format)) rules[key] = null
     })
 
     return rules
@@ -297,9 +290,9 @@ const _actions = {
       quality: self.$quality, // jpg图片压缩质量
     }
 
+    rules = _actions.optimizeRules(rules)
     rules = _actions.optimizeRulesByFormat(rules)
     rules = _actions.filterRules(rules)
-    rules = _actions.optimizeRules(rules)
 
     // 不存在值时，直接返回空字符串
     if (Object.keys(rules).length === 0) {
@@ -375,7 +368,7 @@ class UpyunImageFormater {
       debug: this.$options.debug
     })
 
-    // 最终的其他规则
+    // 其他规则
     this._otherRules = _actions.getFinalOtherRules(this)
 
     // 最终的DPR

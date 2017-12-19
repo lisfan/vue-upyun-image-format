@@ -6,6 +6,7 @@
  */
 
 import validation from '@~lisfan/validation'
+import Logger from '@~lisfan/logger'
 
 import UpyunImageFormater from './upyun-image-formater'
 import getNetworkType from './utils/get-network-type'
@@ -112,6 +113,7 @@ export default {
         quality: finalQuality || quality, // jpg图片压缩质量
       })
 
+      console.log('formater', formater)
       return formater.$finalSrc
     })
   }
