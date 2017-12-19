@@ -32,13 +32,14 @@ export default {
    * @param {boolean} [options.debug=false] - 是否开启日志调试模式
    * @param {number} [options.maxDPR=3] - (>=4)g网络或者'unknow'未知网络下，DPR取值的最大数
    * @param {number} [options.draftRatio=2] - UI设计稿尺寸与设备物理尺寸的比例
+   * @param {function} [options.networkHandler=()=>{'unknow'}] - 获取网络制式的处理函数，若不存在，返回unknow
+   * @param {number} [options.minWidth=global.document.documentElement.clientWidth * global.devicePixelRatio / 2] -
+   *   默认值是(当前设备的物理分辨率 * 当前实际设备像素比的) 二分之一
    * @param {string} [options.scale='both'] - 又拍云图片尺寸缩放方式，默认宽度进行自适应，超出尺寸进行裁剪，若自定义尺寸大于原尺寸时，自动缩放至指定尺寸再裁剪
    * @param {number} [options.quality=90] - 又拍云jpg格式图片压缩质量
    * @param {string|object} [options.rules=''] - (deprecated 使用otherRules代替)又拍云图片处理的其他规则
    * @param {string|object} [options.otherRules=''] - 又拍云图片处理的其他规则
-   * @param {number} [options.minWidth=global.document.documentElement.clientWidth * global.devicePixelRatio / 2] -
-   *   默认值是(当前设备的物理分辨率 * 当前实际设备像素比的) 二分之一
-   * @param {function} [options.networkHandler=()=>{'unknow'}] - 获取网络制式的处理函数，若不存在，返回unknow
+
    */
   install(Vue, {
     debug = UpyunImageFormater.options.debug,

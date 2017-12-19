@@ -318,7 +318,36 @@ const _actions = {
   }
 }
 
+/**
+ * @classdesc 又拍云图片格式化器类
+ *
+ * @class
+ */
 class UpyunImageFormater {
+  /**
+   * 默认配置选项
+   *
+   * @since 2.1.0
+   *
+   * @static
+   * @readonly
+   * @memberOf UpyunImageFormater
+   *
+   * @type {object}
+   * @property {string} name='upyun-image-formater' - 打印器名称标记
+   * @property {boolean} debug=false - 打印器调试模式是否开启
+   * @property {function} networkType='unknow' - 网络制式类型
+   * @property {number} maxDPR=3 - (>=4)g网络或者'unknow'未知网络下，DPR取值的最大数
+   * @property {number} draftRatio=2 - UI设计稿尺寸与设备物理尺寸的比例
+   * @property {number} minWidth=global.document.documentElement.clientWidth * global.devicePixelRatio / 2 -
+   * @property {?string} src - 图片地址
+   * @property {?string} format - 图片格式
+   * @property {string} scale='both' - 又拍云图片尺寸缩放方式，默认宽度进行自适应，超出尺寸进行裁剪，若自定义尺寸大于原尺寸时，自动缩放至指定尺寸再裁剪
+   * @property {?string} size - 图片尺寸
+   * @property {number} quality=90 - 又拍云jpg格式图片压缩质量
+   * @property {string|object} otherRules='' - 又拍云图片处理的其他规则
+   *   默认值是(当前设备的物理分辨率 * 当前实际设备像素比的) 二分之一
+   */
   static options = {
     name: 'upyun-image-formater',
     debug: false,
@@ -334,6 +363,17 @@ class UpyunImageFormater {
     otherRules: {},
   }
 
+  /**
+   * 更新默认配置选项
+   *
+   * @since 2.1.0
+   *
+   * @param {object} options - 配置参数
+   *
+   * @see 选项配置见{@link UpyunImageFormater.options}
+   *
+   * @returns {UpyunImageFormater}
+   */
   static config(options) {
     UpyunImageFormater.options = {
       ...UpyunImageFormater.options,
@@ -346,16 +386,7 @@ class UpyunImageFormater {
   /**
    * 构造函数
    *
-   * @param {object} options - 配置选项
-   * @param {string} [options.name] - 其他规则
-   * @param {boolean} [options.debug] - 其他规则
-   * @param {string} [options.networkType] - 其他规则
-   * @param {string|object} [options.otherRules] - 其他规则
-   * @param {string} [options.src] - 其他规则
-   * @param {string} [options.format] - 其他规则
-   * @param {string} [options.scale] - 其他规则
-   * @param {string} [options.size] - 其他规则
-   * @param {string|number} [options.quality] - 其他规则
+   * @param {object} options - 选项配置见{@link UpyunImageFormater.options}
    */
   constructor(options) {
     this.$options = {
@@ -384,44 +415,144 @@ class UpyunImageFormater {
     this._finalSrc = _actions.stringifyRule(this)
   }
 
+  /**
+   * 日志打印器，方便调试
+   *
+   * @since 2.1.0
+   *
+   * @private
+   */
+  _logger = undefined
+
+  /**
+   * 实例配置项
+   *
+   * @since 2.1.0
+   *
+   * @readonly
+   *
+   * @type {object}
+   */
+  $options = undefined
+
+  /**
+   * 获取实例的原图片地址
+   *
+   * @since 2.1.0
+   *
+   * @getter
+   * @readonly
+   *
+   * @type {string}
+   */
   get $originSrc() {
     return this.$options.src
   }
 
   _finalSrc = undefined
 
+  /**
+   * 获取实例的最终格式化后的图片地址
+   *
+   * @since 2.1.0
+   *
+   * @getter
+   * @readonly
+   *
+   * @type {string}
+   */
   get $finalSrc() {
     return this._finalSrc
   }
 
   _otherRules = undefined
 
+  /**
+   * 获取实例的其他规则项
+   *
+   * @since 2.1.0
+   *
+   * @getter
+   * @readonly
+   *
+   * @type {object}
+   */
   get $otherRules() {
     return this._otherRules
   }
 
   _DPR = undefined
 
+  /**
+   * 获取实例的格式化DPR规则
+   *
+   * @since 2.1.0
+   *
+   * @getter
+   * @readonly
+   *
+   * @type {number}
+   */
   get $DPR() {
     return this._DPR
   }
 
   _format = undefined
 
+  /**
+   * 获取实例的格式化类型规则
+   *
+   * @since 2.1.0
+   *
+   * @getter
+   * @readonly
+   *
+   * @type {string}
+   */
   get $format() {
     return this._format
   }
 
   _size = undefined
 
+  /**
+   * 获取实例的格式化尺寸规则
+   *
+   * @since 2.1.0
+   *
+   * @getter
+   * @readonly
+   *
+   * @type {string}
+   */
   get $size() {
     return this._size
   }
 
+  /**
+   * 获取实例的格式化缩放规则
+   *
+   * @since 2.1.0
+   *
+   * @getter
+   * @readonly
+   *
+   * @type {string}
+   */
   get $scale() {
     return this.$options.scale
   }
 
+  /**
+   * 获取实例的格式化质量规则
+   *
+   * @since 2.1.0
+   *
+   * @getter
+   * @readonly
+   *
+   * @type {number}
+   */
   get $quality() {
     return this.$options.quality
 
