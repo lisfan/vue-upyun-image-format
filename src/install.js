@@ -4,7 +4,6 @@
  * @version 2.0.0
  * @licence MIT
  */
-
 import validation from '@~lisfan/validation'
 import Logger from '@~lisfan/logger'
 
