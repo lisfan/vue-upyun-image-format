@@ -1,5 +1,6 @@
 /**
  * @file 检测webp特性的支持程度
+ * @since 1.0.0
  */
 
 import validation from '@~lisfan/validation'
@@ -11,7 +12,7 @@ const logger = new Logger({
 })
 
 // 将检测结果存储在sessionStorage中，期间只检测一次，避免重复求值
-const storageName = 'WEBP_FEATURES'
+const storageName = 'CHECKED_WEBP_FEATURES'
 
 const WEBP_FEATURES = JSON.parse(global.sessionStorage.getItem(storageName)) || {
   lossy: undefined,
@@ -33,35 +34,41 @@ const IMAGES_SOURCE = {
 
 /**
  * 检测webp特性的支持程度
- * @ignore
+ *
+ * @since 1.0.0
+ *
+ * @async
+ *
  * @param {string} feature - 特性值
+ *
  * @returns {Promise}
  */
 function checkWebpFeatures(feature) {
   return new Promise((resolve, reject) => {
-    let $image = new Image()
+    let image = new Image()
 
-    $image.onload = function () {
-      ($image.width > 0) && ($image.height > 0) ? resolve(true) : reject(false)
+    image.onload = function () {
+      (image.width > 0) && (image.height > 0)
+        ? resolve(true)
+        : reject(false)
     }
 
-    $image.onerror = function () {
+    image.onerror = function () {
       reject(false)
     }
 
-    $image.src = IMAGES_SOURCE[feature]
+    image.src = IMAGES_SOURCE[feature]
   })
 }
 
-// 发起检测
+// 主动发起检测
 Object.entries(WEBP_FEATURES).forEach(([feature, isSupport]) => {
-  // 如果已经从缓存中先进知了支持结果，则不再处理
+  // 如果已经从缓存获取了webp某个特性的支持结果，则不再发起该特性
   if (validation.isBoolean(isSupport)) {
-    logger.log('sessionStorage already existed test result:', feature, isSupport)
-
-    return
+    return logger.log('sessionStorage already existed test result:', feature, isSupport)
   }
 
+  // 开始检测
   logger.log(`checking webp ${feature} feature`)
 
   checkWebpFeatures(feature).then(() => {
@@ -71,7 +78,7 @@ Object.entries(WEBP_FEATURES).forEach(([feature, isSupport]) => {
     WEBP_FEATURES[feature] = false
     logger.log(`sorry! unsupport ${feature} feature`)
   }).finally(() => {
-    // 存储检测成功后的结果
+    // 暂存检测后的结果
     global.sessionStorage.setItem(storageName, JSON.stringify(WEBP_FEATURES))
   })
 })
@@ -80,7 +87,10 @@ export default {
   /**
    * 是否支持对应的webp特性
    *
+   * @since 1.0.0
+   *
    * @param {string} feature - 特性值
+   *
    * @returns {boolean}
    */
   support(feature) {

@@ -22,7 +22,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#install">install</a></li><li><a href="global.html#image-format">image-format</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="UpyunImageFormater.html">UpyunImageFormater</a><ul class='methods'><li data-type='method'><a href="UpyunImageFormater.html#.config">config</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#install">install</a></li><li><a href="global.html#image-format">image-format</a></li><li><a href="global.html#checkWebpFeatures">checkWebpFeatures</a></li></ul>
 </nav>
 
 <div id="main">
@@ -115,7 +115,7 @@
 
     
 
-    <h4 class="name" id="install"><span class="type-signature"></span>install<span class="signature">(Vue, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="install"><span class="type-signature"></span>install<span class="signature">(Vue, options)</span><span class="type-signature"></span></h4>
 
     
 
@@ -127,7 +127,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line353">line 353</a>
+        <a href="install.js.html">install.js</a>, <a href="install.js.html#line18">line 18</a>
     </li></ul></dd>
     
 
@@ -197,8 +197,6 @@
         <th>Type</th>
 
         
-        <th>Attributes</th>
-        
 
         
         <th>Default</th>
@@ -226,14 +224,6 @@
             </td>
 
             
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
 
             
                 <td class="default">
@@ -260,16 +250,6 @@
             
             </td>
 
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
             
 
             
@@ -427,6 +407,84 @@
 
         <tr>
             
+                <td class="name"><code>networkHandler</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>()=>{'unknow'}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>获取网络制式的处理函数，若不存在，返回unknow</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>minWidth</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>global.document.documentElement.clientWidth * global.devicePixelRatio / 2</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>默认值是(当前设备的物理分辨率 * 当前实际设备像素比的) 二分之一</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
                 <td class="name"><code>scale</code></td>
             
 
@@ -512,6 +570,51 @@
             
                 
 <span class="param-type">string</span>
+|
+
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>''</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>(deprecated 使用otherRules代替)又拍云图片处理的其他规则</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>otherRules</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">object</span>
 
 
             
@@ -538,82 +641,6 @@
             
 
             <td class="description last"><p>又拍云图片处理的其他规则</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>minWidth</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>默认值是(当前设备的物理分辨率 * 当前实际设备像素比的) 二分之一</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>networkHandler</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    <code>'unknow'</code>
-                
-                </td>
-            
-
-            <td class="description last"><p>获取网络制式的处理函数，若不存在，返回unknow</p></td>
         </tr>
 
     
@@ -647,7 +674,7 @@
 
     
 
-    <h4 class="name" id="image-format"><span class="type-signature"></span>image-format<span class="signature">(src, sizeOrConfig<span class="signature-attributes">opt</span>, scale<span class="signature-attributes">opt, nullable</span>, format<span class="signature-attributes">opt, nullable</span>, quality<span class="signature-attributes">opt, nullable</span>, rules<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="image-format"><span class="type-signature"></span>image-format<span class="signature">(src, sizeOrConfig<span class="signature-attributes">opt</span>, scale<span class="signature-attributes">opt, nullable</span>, format<span class="signature-attributes">opt, nullable</span>, quality<span class="signature-attributes">opt, nullable</span>, otherRules<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {string}</span></h4>
 
     
 
@@ -659,7 +686,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line373">line 373</a>
+        <a href="install.js.html">install.js</a>, <a href="install.js.html#line65">line 65</a>
     </li></ul></dd>
     
 
@@ -943,7 +970,7 @@
 
         <tr>
             
-                <td class="name"><code>rules</code></td>
+                <td class="name"><code>otherRules</code></td>
             
 
             <td class="type">
@@ -998,6 +1025,178 @@
 
 
 
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="checkWebpFeatures"><span class="type-signature">(async) </span>checkWebpFeatures<span class="signature">(feature)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="utils_webp-features-support.js.html">utils/webp-features-support.js</a>, <a href="utils_webp-features-support.js.html#line46">line 46</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-since">Since:</dt>
+    <dd class="tag-since"><ul class="dummy"><li>1.0.0</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>检测webp特性的支持程度</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>feature</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>特性值</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
         
@@ -1018,7 +1217,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Nov 30 2017 16:13:40 GMT+0800 (CST) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Dec 20 2017 09:49:18 GMT+0800 (CST) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
