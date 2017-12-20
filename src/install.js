@@ -1,8 +1,5 @@
 /**
  * @file 又拍云图片处理工具插件
- * @author lisfan <goolisfan@gmail.com>
- * @version 2.0.0
- * @licence MIT
  */
 import validation from '@~lisfan/validation'
 import Logger from '@~lisfan/logger'

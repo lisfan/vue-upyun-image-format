@@ -1,6 +1,5 @@
 /**
  * @file 检测webp特性的支持程度
- * @since 1.0.0
  */
 
 import validation from '@~lisfan/validation'

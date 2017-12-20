@@ -1,8 +1,5 @@
 /**
  * @file vue指令插件-图片加载器
- * @author lisfan <goolisfan@gmail.com>
- * @version 2.1.0
- * @licence MIT
  */
 
 import validation from '@~lisfan/validation'
