@@ -370,7 +370,7 @@ class UpyunImageFormater {
    *
    * @param {object} options - 配置参数
    *
-   * @see 选项配置见{@link UpyunImageFormater.options}
+   * @see 配置选项见{@link UpyunImageFormater.options}
    *
    * @returns {UpyunImageFormater}
    */
@@ -386,7 +386,7 @@ class UpyunImageFormater {
   /**
    * 构造函数
    *
-   * @param {object} options - 选项配置见{@link UpyunImageFormater.options}
+   * @param {object} options - 配置选项见{@link UpyunImageFormater.options}
    */
   constructor(options) {
     this.$options = {
@@ -399,6 +399,7 @@ class UpyunImageFormater {
       debug: this.$options.debug
     })
 
+    // 以下调用顺序不能反
     // 其他规则
     this._otherRules = _actions.getFinalOtherRules(this)
 
@@ -411,7 +412,7 @@ class UpyunImageFormater {
     // 最终的图片格式
     this._format = _actions.getFinalFormat(this)
 
-    // 否则重新计算，拼接最终的结果
+    // 拼接最终的结果
     this._finalSrc = _actions.stringifyRule(this)
   }
 
@@ -425,7 +426,7 @@ class UpyunImageFormater {
   _logger = undefined
 
   /**
-   * 实例配置项
+   * 实例初始配置项
    *
    * @since 2.1.0
    *
