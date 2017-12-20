@@ -43,14 +43,14 @@ const _actions = {
       return self._logger.error('other rules is\'t pairs, can\'t parse! please check.')
     }
 
-    const finalOtherRules = {}
+    const actualOtherRules = {}
 
     rules.forEach((value, index) => {
       // 条件不符合时，不增加值
-      if (index % 2 === 0) finalOtherRules[value] = rules[index + 1]
+      if (index % 2 === 0) actualOtherRules[value] = rules[index + 1]
     })
 
-    return finalOtherRules
+    return actualOtherRules
   },
   /**
    * 根据当前的网络制式，获取最终的DPR值
@@ -82,8 +82,8 @@ const _actions = {
    */
   getFinalSize(self) {
     const originSize = self.$options.size
-    const finalScale = self.$scale
-    const finalDPR = self.$DPR
+    const actualScale = self.$scale
+    const actualDPR = self.$DPR
     const draftRatio = self.$options.draftRatio
 
     // 如果originSize 不存在，则返回
@@ -96,33 +96,33 @@ const _actions = {
     const sizeList = originSize.toString().split('x')
 
     // 四舍五入
-    let finalSizeList = sizeList.map((sizeItem) => {
-      return Math.round((Number.parseFloat(sizeItem) / draftRatio) * finalDPR)
+    let actualSizeList = sizeList.map((sizeItem) => {
+      return Math.round((Number.parseFloat(sizeItem) / draftRatio) * actualDPR)
     })
 
     // 过滤出数字格式的值
-    finalSizeList = finalSizeList.filter((size) => {
+    actualSizeList = actualSizeList.filter((size) => {
       return validation.isNumber(size)
     })
 
     // 检测缩放所需的尺寸参数长度
-    const paramLen = SCALE_PARAM_LEN[finalScale]
+    const paramLen = SCALE_PARAM_LEN[actualScale]
 
     // 截断缩放方式需要的尺寸长度
-    finalSizeList = finalSizeList.slice(0, paramLen)
+    actualSizeList = actualSizeList.slice(0, paramLen)
 
     // 当前截断后有效的长度
-    const sizeLen = finalSizeList.length
+    const sizeLen = actualSizeList.length
 
     // 如果所需尺寸数量大于当前尺寸数量，则进行补全
     if (paramLen > sizeLen) {
       const quotient = Math.ceil(sizeLen / paramLen) + 1
 
-      finalSizeList = (finalSizeList.toString() + ',').repeat(quotient).slice(0, -1).split(',')
-      finalSizeList = finalSizeList.slice(0, paramLen)
+      actualSizeList = (actualSizeList.toString() + ',').repeat(quotient).slice(0, -1).split(',')
+      actualSizeList = actualSizeList.slice(0, paramLen)
     }
 
-    return finalSizeList.join('x')
+    return actualSizeList.join('x')
   },
   /**
    * 获取图片后缀
@@ -413,7 +413,7 @@ class UpyunImageFormater {
     this._format = _actions.getFinalFormat(this)
 
     // 拼接最终的结果
-    this._finalSrc = _actions.stringifyRule(this)
+    this._actualSrc = _actions.stringifyRule(this)
   }
 
   /**
@@ -450,7 +450,7 @@ class UpyunImageFormater {
     return this.$options.src
   }
 
-  _finalSrc = undefined
+  _actualSrc = undefined
 
   /**
    * 获取实例的最终格式化后的图片地址
@@ -462,8 +462,8 @@ class UpyunImageFormater {
    *
    * @type {string}
    */
-  get $finalSrc() {
-    return this._finalSrc
+  get $actualSrc() {
+    return this._actualSrc
   }
 
   _otherRules = undefined

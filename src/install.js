@@ -118,7 +118,7 @@ export default {
         quality: finalQuality || quality, // jpg图片压缩质量
       })
 
-      return formater.$finalSrc
+      return formater.$actualSrc
     })
   }
 }
