@@ -25,6 +25,7 @@ export default {
    *
    * @param {Vue} Vue - Vue类
    * @param {object} options={} - 配置选项
+   * @param {string} [options.name='filter-image-format'] - 日志打印器命名空间
    * @param {boolean} [options.debug=false] - 是否开启日志调试模式
    * @param {number} [options.maxDPR=3] - (>=4)g网络或者'unknow'未知网络下，DPR取值的最大数
    * @param {number} [options.draftRatio=2] - UI设计稿尺寸与设备物理尺寸的比例
@@ -38,6 +39,7 @@ export default {
 
    */
   install(Vue, {
+    name = `${PLUGIN_TYPE}-${FILTER_NAMESPACE}`,
     debug = UpyunImageFormater.options.debug,
     maxDPR = UpyunImageFormater.options.maxDPR,
     draftRatio = UpyunImageFormater.options.draftRatio,
@@ -49,7 +51,7 @@ export default {
     networkHandler = getNetworkType
   } = {}) {
     const logger = new Logger({
-      name: `${PLUGIN_TYPE}-${FILTER_NAMESPACE}`,
+      name,
       debug
     })
 
