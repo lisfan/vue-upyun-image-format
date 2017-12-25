@@ -13,7 +13,6 @@
 - 图片优化依赖了又拍云的处理服务，相应的图片处理规则请参考[又拍云文档](http://docs.upyun.com/cloud/image/#webp)
 - 根据当前设计稿和设备物理分辨率缩放比，及设备的DPR值，计算出实际的图片尺寸
 - 由于 [NetworkInformation API](https://developer.mozilla.org/en-US/docs/Web/API/NetworkInformation)支持力度差，所以需要外部额外传入一个获取网络制式的方式（比如平台入口是微信或支付宝的）
-- 使用格式：`<img :src="图片地址 | image-format([sizeOrConfig],[scale = 'both'],[format],[quality],[otherRules])" />`
 
 ## Install 安装
 
@@ -46,6 +45,10 @@ Vue.use(VueUpyunImageFormat, {
 ```
 
 ```html
+<!-- 使用格式 -->
+<img :src="图片地址 | image-format([[sizeOrConfig], [scale = 'both'], [format], [quality], [otherRules]])" />
+
+
 <!-- 无任何参数，接着内部优化策略自动执行：使用原尺寸，转换为jpg，并压缩质量到90%和启用渐进载入 -->
 <img :src="imageSrc | image-format">
 
@@ -81,7 +84,7 @@ Vue.use(VueUpyunImageFormat, {
 
 **注3：但可能存在的一个规则是：图片数量级越多，图片容量越小，最终的渲染总时间消耗越少**
 
-### 静态图源（`png/jpg/webp`）的对比（ 同一图源，相同尺寸下 ）
+### 静态图源（`png/jpg/webp`）的容量对比（ 同一图源，相同尺寸下）
 
 1. 未使用任何优化的情况下
   - png > 无损webp > jpg > 有损webp
@@ -97,14 +100,15 @@ Vue.use(VueUpyunImageFormat, {
 6. jpg设置了压缩质量(`quality/<number>`)后
   - jpg 90%的质量下，容量优化35%
   - jpg 80%的质量下，容量优化约60%
-7. png、webp、jpg图片质量相较时（纯肉眼判断）
+7. png、webp、jpg图片质量感受比较（纯肉眼判断）
   - jpg格式的色彩饱和度最好，饱满靓丽
   - png和webp饱和度质量相差无几，整体偏灰，饱和底下降会比较明显
-  - webp如果细看会有模糊感，细节会丢失
+  - webp如果细看会有模糊感，细节丢失有点小严重
   - jpg在压缩质量90%情况下细节还原度还挺高，压缩质量80%的情况下细节丢失度还是挺严重的，但总体细节还原还是比webp好
-  - 所以针对于大尺寸图片，在质量和容量双重保证的情况下使用jpg格式，而对于小尺寸图片，则优先使用webp格式
 
-### 动态图源（gif/动态webp）的对比（ 同一图源，相同尺寸下 ）
+小结：所以针对于大尺寸图片，在质量和容量大小双重保证的情况下使用jpg格式，而对于小尺寸图片，则优先使用webp格式
+
+### 动态图源（gif/动态webp）的容量对比（ 同一图源，相同尺寸下 ）
 
 1. 未使用任何优化的情况下
   - 无损动态webp > gif > 有损动态webp
