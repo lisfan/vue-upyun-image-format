@@ -23,10 +23,10 @@ export default {
    *
    * @function install
    *
-   * @param {Vue} Vue - Vue类
+   * @param {Vue} Vue - VUE类
    * @param {object} options={} - 配置选项
    * @param {string} [options.name='filter-image-format'] - 日志打印器命名空间
-   * @param {boolean} [options.debug=false] - 是否开启日志调试模式
+   * @param {boolean} [options.debug=false] - 打印器调试模式是否开启
    * @param {number} [options.maxDPR=3] - (>=4)g网络或者'unknow'未知网络下，DPR取值的最大数
    * @param {number} [options.draftRatio=2] - UI设计稿尺寸与设备物理尺寸的比例
    * @param {function} [options.networkHandler=()=>{'unknow'}] - 获取网络制式的处理函数，若不存在，返回unknow

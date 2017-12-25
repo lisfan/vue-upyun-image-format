@@ -372,12 +372,13 @@ class UpyunImageFormater {
    * @returns {UpyunImageFormater}
    */
   static config(options) {
-    UpyunImageFormater.options = {
-      ...UpyunImageFormater.options,
+    const ctr = this
+    ctr.options = {
+      ...ctr.options,
       options
     }
 
-    return this
+    return ctr
   }
 
   /**
@@ -386,8 +387,9 @@ class UpyunImageFormater {
    * @param {object} options - 配置选项见{@link UpyunImageFormater.options}
    */
   constructor(options) {
+    const ctr = this.constructor
     this.$options = {
-      ...UpyunImageFormater.options,
+      ...ctr.options,
       ...options
     }
 
