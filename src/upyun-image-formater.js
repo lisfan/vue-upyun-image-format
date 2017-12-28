@@ -331,8 +331,8 @@ class UpyunImageFormater {
    * @memberOf UpyunImageFormater
    *
    * @type {object}
-   * @property {string} name='upyun-image-formater' - 打印器名称标记
-   * @property {boolean} debug=false - 打印器调试模式是否开启
+   * @property {string} name='upyun-image-formater' - 日志打印器名称标记
+   * @property {boolean} debug=false - 日志打印器调试模式开启状态
    * @property {function} networkType='unknow' - 网络制式类型
    * @property {number} maxDPR=3 - (>=4)g网络或者'unknow'未知网络下，DPR取值的最大数
    * @property {number} draftRatio=2 - UI设计稿尺寸与设备物理尺寸的比例
@@ -372,13 +372,13 @@ class UpyunImageFormater {
    * @returns {UpyunImageFormater}
    */
   static config(options) {
-    const ctr = this
-    ctr.options = {
-      ...ctr.options,
+    const ctor = this
+    ctor.options = {
+      ...ctor.options,
       options
     }
 
-    return ctr
+    return ctor
   }
 
   /**
@@ -387,9 +387,9 @@ class UpyunImageFormater {
    * @param {object} options - 配置选项见{@link UpyunImageFormater.options}
    */
   constructor(options) {
-    const ctr = this.constructor
+    const ctor = this.constructor
     this.$options = {
-      ...ctr.options,
+      ...ctor.options,
       ...options
     }
 
